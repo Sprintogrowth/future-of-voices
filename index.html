@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future of Voices</title>
+<style>
+  :root{
+    --black:#000000; --black2:#121110; --black3:#1b1916;
+    --gold:#c9a35e; --gold-bright:#e8c98a; --cream:#f3ede0; --gray:#a39c8f;
+    --line:rgba(201,163,94,0.22);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--cream);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;overflow-x:hidden;position:relative;}
+  ::selection{background:var(--gold);color:var(--black);}
+  h1,h2,h3,.serif{font-family:Georgia,'Times New Roman',serif;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+  #manifesto,#directory,#join{scroll-margin-top:90px;}
+
+  /* CURTAIN INTRO */
+  .curtain{position:fixed;inset:0;z-index:2000;display:flex;}
+  .curtain-half{width:50%;height:100%;background:var(--black);}
+  .curtain-half.left{animation:slideLeft .9s cubic-bezier(.76,0,.24,1) 1.15s forwards;}
+  .curtain-half.right{animation:slideRight .9s cubic-bezier(.76,0,.24,1) 1.15s forwards;}
+  @keyframes slideLeft{to{transform:translateX(-100%);}}
+  @keyframes slideRight{to{transform:translateX(100%);}}
+  .curtain-logo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:2001;animation:fadeOutLogo .4s ease 1.05s forwards;}
+  .curtain-logo .cl-text{font-family:Georgia,serif;font-size:1.3rem;letter-spacing:6px;text-transform:uppercase;color:var(--cream);}
+  .curtain-logo .cl-text em{color:var(--gold);font-style:italic;}
+  .curtain-line{width:0;height:1px;background:var(--gold);margin:18px auto 0;animation:loadLine 1s ease forwards;}
+  @keyframes loadLine{to{width:120px;}}
+  @keyframes fadeOutLogo{to{opacity:0;visibility:hidden;}}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:22px 5vw;background:rgba(0,0,0,0.5);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .4s ease, background .4s ease;}
+  nav.scrolled{border-bottom:1px solid var(--line);background:rgba(0,0,0,0.9);}
+  .logo{font-family:Georgia,serif;font-size:1.05rem;letter-spacing:3px;text-transform:uppercase;}
+  .logo span{color:var(--gold);font-style:italic;}
+  .nav-links{display:flex;gap:38px;}
+  .nav-links button{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);position:relative;padding:0 0 4px;transition:color .3s ease;background:none;border:none;cursor:pointer;}
+  .nav-links button::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--gold);transition:width .3s ease;}
+  .nav-links button:hover{color:var(--cream);} .nav-links button:hover::after{width:100%;}
+  .nav-cta{border:1px solid var(--gold);color:var(--gold-bright);padding:9px 20px;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;border-radius:30px;transition:all .35s ease;white-space:nowrap;cursor:pointer;background:transparent;}
+  .nav-cta:hover{background:var(--gold);color:var(--black);}
+  .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;background:none;border:none;cursor:pointer;padding:0;}
+  .hamburger span{display:block;width:100%;height:1.5px;background:var(--cream);}
+  .mobile-menu{position:fixed;inset:0;background:var(--black);z-index:1800;display:none;flex-direction:column;align-items:center;justify-content:center;gap:30px;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu button{background:none;border:none;color:var(--cream);font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;font-family:Georgia,serif;cursor:pointer;}
+  .mobile-menu button:hover{color:var(--gold-bright);}
+  .mobile-menu .close-btn{position:fixed;top:24px;right:24px;}
+  @media(max-width:860px){.nav-links{display:none;} .nav-cta{display:none;} .hamburger{display:flex;}}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;padding:90px 6vw 40px;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:-50%;background:linear-gradient(100deg,transparent 42%, rgba(232,201,138,0.06) 50%, transparent 58%);animation:sweep 8s ease-in-out infinite;pointer-events:none;z-index:1;}
+  @keyframes sweep{0%{transform:translateX(-25%);}50%{transform:translateX(25%);}100%{transform:translateX(-25%);}}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.16;z-index:0;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);}
+  .blob1{width:520px;height:520px;top:-150px;left:-150px;animation:float1 22s ease-in-out infinite;}
+  .blob2{width:420px;height:420px;bottom:-120px;right:-100px;animation:float2 26s ease-in-out infinite;}
+  @keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,40px);}}
+  @keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-50px,-30px);}}
+
+  .hero-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+  .hero-byline{position:relative;z-index:2;font-family:Georgia,serif;font-style:italic;font-size:0.95rem;letter-spacing:1px;color:var(--gold-bright);margin-top:14px;}
+  .eyebrow{position:relative;z-index:2;font-size:0.72rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+  .hero-title{position:relative;z-index:2;}
+  .line1{display:block;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:400;color:var(--cream);letter-spacing:6px;}
+  .line2{display:block;font-size:clamp(3.2rem,11vw,7rem);font-style:italic;font-weight:400;line-height:0.95;margin-top:8px;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold) 55%, #9c7a3c);-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:glowPulse 4s ease-in-out infinite;}
+  @keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(201,163,94,0.2));}50%{filter:drop-shadow(0 0 16px rgba(201,163,94,0.4));}}
+  .hero p{position:relative;z-index:2;max-width:560px;margin:14px auto 0;color:var(--gray);font-size:1.05rem;line-height:1.7;}
+  .hero-ctas{position:relative;z-index:2;display:flex;gap:18px;margin-top:36px;flex-wrap:wrap;justify-content:center;}
+  .btn-gold{position:relative;background:var(--gold);color:var(--black);padding:15px 34px;border-radius:34px;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;transition:transform .3s ease, box-shadow .3s ease;display:inline-block;border:none;cursor:pointer;overflow:hidden;}
+  .btn-gold:hover{transform:translateY(-2px);box-shadow:0 14px 30px -10px rgba(201,163,94,0.5);}
+  .btn-outline{position:relative;border:1px solid var(--line);color:var(--cream);padding:15px 34px;border-radius:34px;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;transition:all .3s ease;display:inline-block;background:var(--black);cursor:pointer;overflow:hidden;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold-bright);}
+  .letterbox-bottom{position:absolute;bottom:0;left:0;right:0;height:22px;background:var(--black);border-top:1px solid var(--line);z-index:3;}
+  .letterbox-bottom span{font-size:0.58rem;letter-spacing:3px;color:var(--gray);text-transform:uppercase;display:block;text-align:center;line-height:22px;}
+
+  /* MARQUEE */
+  .marquee{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);padding:16px 0;background:var(--black2);}
+  .marquee-track{display:inline-block;animation:marqueeScroll 24s linear infinite;}
+  .marquee span{font-family:Georgia,serif;font-style:italic;font-size:0.92rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:0 24px;}
+  @keyframes marqueeScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  section{padding:120px 6vw;position:relative;}
+  .section-label{font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:18px;}
+  .section-title{font-size:clamp(1.8rem,3.4vw,2.7rem);text-align:center;font-weight:400;color:var(--cream);margin-bottom:20px;}
+  .section-sub{text-align:center;color:var(--gray);max-width:560px;margin:0 auto;line-height:1.8;font-size:0.98rem;}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease, transform .9s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  .manifesto{max-width:780px;margin:0 auto;text-align:center;}
+  .manifesto-line{width:48px;height:1px;background:var(--gold);margin:0 auto 36px;}
+  .manifesto p{font-family:Georgia,serif;font-style:italic;font-size:clamp(1.3rem,2.4vw,1.8rem);line-height:1.65;color:var(--cream);}
+  .manifesto p span{color:var(--gold-bright);}
+
+  .question-wrap{max-width:760px;margin:0 auto;border:1px solid var(--line);border-radius:18px;padding:64px 48px;text-align:center;background:linear-gradient(180deg,var(--black2),var(--black));}
+  .q-mark{font-family:Georgia,serif;font-size:3.4rem;color:var(--gold);opacity:0.5;line-height:0.5;display:block;margin-bottom:18px;}
+  .question-wrap h3{font-size:clamp(1.4rem,2.6vw,2.1rem);font-weight:400;line-height:1.5;color:var(--cream);}
+  .question-tag{margin-top:30px;font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray);}
+
+  .filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:46px 0 56px;}
+  .filter-btn{padding:10px 22px;border-radius:30px;border:1px solid var(--line);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);background:transparent;cursor:pointer;transition:all .3s ease;}
+  .filter-btn:hover{color:var(--cream);border-color:var(--gold);}
+  .filter-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold);font-weight:600;}
+  .empty-state{text-align:center;padding:60px 20px;}
+  .empty-state-icon{font-size:1.8rem;color:var(--gold);margin-bottom:18px;}
+  .empty-state p{font-family:Georgia,serif;font-style:italic;font-size:1.1rem;margin-bottom:28px;color:var(--cream);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px;max-width:1180px;margin:0 auto;}
+  .card{aspect-ratio:2/3;border-radius:14px;position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--line);transition:transform .45s ease, box-shadow .45s ease;background:linear-gradient(150deg,var(--black3),var(--black2) 60%, #25201a);}
+  .card:hover{transform:translateY(-8px);box-shadow:0 24px 50px -18px rgba(0,0,0,0.7);}
+  .card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .card-init{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:3.6rem;color:rgba(201,163,94,0.16);letter-spacing:2px;transition:opacity .35s ease;}
+  .card:hover .card-init{opacity:0.5;}
+  .card-overlay{position:absolute;left:0;right:0;bottom:0;padding:18px 16px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.92) 80%);}
+  .card-name{font-family:Georgia,serif;font-size:1.02rem;color:var(--cream);}
+  .card-cat{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-top:5px;display:block;}
+  .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.7);width:46px;height:46px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;opacity:0;transition:all .35s ease;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);}
+  .card:hover .play-icon{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .play-icon svg{width:14px;height:14px;fill:var(--gold-bright);margin-left:2px;}
+  .card.hidden{display:none;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);z-index:900;display:none;align-items:center;justify-content:center;padding:24px;}
+  .modal-bg.open{display:flex;}
+  .modal{width:100%;max-width:760px;background:var(--black2);border:1px solid var(--line);border-radius:18px;display:flex;overflow:hidden;max-height:88vh;position:relative;}
+  .modal-poster{width:42%;position:relative;background:linear-gradient(150deg,var(--black3),#241f18);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+  .modal-poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .modal-poster span{font-family:Georgia,serif;font-size:5rem;color:rgba(201,163,94,0.18);}
+  .modal-poster .play-icon{opacity:1;width:60px;height:60px;z-index:2;}
+  .modal-poster .play-icon svg{width:18px;height:18px;}
+  .modal-body{padding:42px 38px;flex:1;overflow-y:auto;}
+  .modal-cat{font-size:0.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+  .modal-body h2{font-size:1.7rem;font-weight:400;margin:12px 0 18px;}
+  .modal-body p{color:var(--gray);line-height:1.75;font-size:0.93rem;margin-bottom:24px;}
+  .video-bar{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:30px;padding:10px 16px;margin-bottom:26px;cursor:pointer;}
+  .mini-play{width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .mini-play svg{width:9px;height:9px;fill:var(--black);margin-left:1px;}
+  .progress{flex:1;height:2px;background:var(--line);border-radius:2px;position:relative;}
+  .progress::after{content:'';position:absolute;left:0;top:0;height:100%;width:18%;background:var(--gold);border-radius:2px;}
+  .duration{font-size:0.7rem;color:var(--gray);}
+  .written-block{border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:26px;background:var(--black3);}
+  .written-block .quote-mark{font-family:Georgia,serif;font-size:2.2rem;color:var(--gold);opacity:0.55;line-height:0.5;display:block;margin-bottom:10px;}
+  .written-text{font-family:Georgia,serif;font-style:italic;color:var(--cream);font-size:1.05rem;line-height:1.6;}
+  .modal-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .share-menu{display:none;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .share-menu.open{display:flex;}
+  .share-icon{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--black3);color:var(--gray);font-size:0.72rem;font-weight:700;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;letter-spacing:0.5px;}
+  .share-icon:hover{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,163,94,0.08);}
+  .close-btn{position:absolute;top:18px;right:22px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all .3s ease;background:transparent;z-index:5;}
+  .close-btn:hover{border-color:var(--gold);color:var(--gold-bright);}
+  .modal-extra{max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease, opacity .4s ease;}
+  .modal-extra.open{max-height:200px;opacity:1;margin-top:18px;}
+  .modal-extra-row{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--gray);padding:8px 0;border-top:1px solid var(--line);}
+  @media(max-width:640px){.modal{flex-direction:column;max-height:92vh;overflow-y:auto;}.modal-poster{width:100%;height:200px;}}
+
+  /* FORM ELEMENTS (shared by register / admin) */
+  .register-modal{max-width:560px;}
+  .register-modal .modal-body{width:100%;}
+  .form-row{margin-bottom:16px;display:flex;flex-direction:column;gap:7px;}
+  .form-row label{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);}
+  .form-row input[type=text],.form-row input[type=email],.form-row input[type=password],.form-row input[type=url],.form-row select,.form-row textarea{background:var(--black3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--cream);font-family:inherit;font-size:0.9rem;outline:none;transition:border-color .3s ease;width:100%;}
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold);}
+  .form-row select option{background:var(--black2);}
+  .upload-box{position:relative;height:110px;border:1px dashed var(--line);border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--black3);}
+  .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;}
+  .upload-placeholder{font-size:0.72rem;color:var(--gray);letter-spacing:0.5px;text-align:center;padding:0 10px;}
+  .upload-box img,.upload-box video{width:100%;height:100%;object-fit:cover;}
+  .type-toggle{display:flex;gap:10px;}
+  .type-btn{flex:1;padding:13px 10px;border-radius:9px;border:1px solid var(--line);background:var(--black3);color:var(--gray);font-size:0.8rem;cursor:pointer;transition:all .3s ease;}
+  .type-btn.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,163,94,0.1);}
+  .checkbox-row{display:flex;align-items:flex-start;gap:10px;font-size:0.76rem;color:var(--gray);line-height:1.5;margin:8px 0 4px;}
+  .checkbox-row input{margin-top:3px;accent-color:var(--gold);}
+  .success-check{width:58px;height:58px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.5rem;color:var(--gold-bright);animation:popIn .5s ease;}
+  @keyframes popIn{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+  #registerSuccess h3{font-family:Georgia,serif;font-weight:400;margin-bottom:10px;font-size:1.25rem;}
+  #registerSuccess p{color:var(--gray);font-size:0.86rem;margin-bottom:22px;}
+
+  /* ADMIN */
+  .admin-modal{max-width:820px;}
+  .admin-section-title{font-family:Georgia,serif;color:var(--gold-bright);font-size:1.05rem;margin:30px 0 14px;}
+  .admin-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .admin-row{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:12px 16px;}
+  .admin-row-name{font-size:0.88rem;color:var(--cream);}
+  .admin-row-tag{font-size:0.68rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-left:8px;}
+  .admin-row-actions{display:flex;gap:8px;}
+  .admin-row-actions button{font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--gray);cursor:pointer;transition:all .3s ease;}
+  .admin-row-actions button:hover{border-color:var(--gold);color:var(--gold-bright);}
+  .admin-empty{color:var(--gray);font-size:0.85rem;padding:14px 0;}
+  .admin-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;max-width:1000px;margin:56px auto 0;}
+  .step{text-align:center;padding:36px 22px;border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .3s ease, transform .3s ease;}
+  .step:hover{border-color:var(--gold);transform:translateY(-4px);}
+  .step-num{font-family:Georgia,serif;font-size:1rem;color:var(--gold);margin-bottom:18px;}
+  .step h4{font-size:1.05rem;font-weight:400;margin-bottom:12px;font-family:Georgia,serif;}
+  .step p{color:var(--gray);font-size:0.86rem;line-height:1.65;}
+  @media(max-width:760px){.steps{grid-template-columns:1fr;}}
+  .join-cta{text-align:center;margin-top:50px;}
+
+  footer{padding:60px 6vw 40px;border-top:1px solid var(--line);text-align:center;}
+  footer .logo{justify-content:center;margin-bottom:24px;display:inline-block;}
+  .footer-links{display:flex;gap:30px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+  .footer-links button{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);background:none;border:none;cursor:pointer;font-family:inherit;}
+  .footer-links button:hover{color:var(--gold-bright);}
+  .footer-bottom{color:var(--gray);font-size:0.75rem;}
+  .footer-bottom span{color:var(--gold);}
+  .footer-copyright{color:var(--gray);font-size:0.7rem;margin-top:10px;opacity:0.75;}
+
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black2);border:1px solid var(--gold);color:var(--cream);padding:14px 26px;border-radius:30px;font-size:0.82rem;opacity:0;pointer-events:none;transition:all .35s ease;z-index:1100;max-width:80vw;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* LEGAL PAGES */
+  .legal-overlay{position:fixed;inset:0;background:var(--black);z-index:1500;display:none;overflow-y:auto;}
+  .legal-overlay.open{display:block;}
+  .legal-content{max-width:740px;margin:0 auto;padding:100px 24px 120px;position:relative;}
+  .legal-close{position:fixed;top:24px;right:24px;z-index:1501;}
+  .legal-label{font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .legal-content h1{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:400;margin-bottom:36px;color:var(--cream);}
+  .legal-content h3{font-family:Georgia,serif;font-size:1.05rem;font-weight:400;color:var(--gold-bright);margin:32px 0 12px;}
+  .legal-content p{color:var(--gray);line-height:1.8;font-size:0.93rem;margin-bottom:16px;}
+  .legal-content ul{color:var(--gray);line-height:1.8;font-size:0.93rem;margin:0 0 16px 20px;}
+  .legal-content li{margin-bottom:10px;}
+  .legal-content strong{color:var(--cream);}
+</style>
+</head>
+<body>
+
+<div class="curtain" id="curtain">
+  <div class="curtain-half left"></div>
+  <div class="curtain-half right"></div>
+</div>
+<div class="curtain-logo" id="curtainLogo">
+  <div class="cl-text">FUTURE OF <em>VOICES</em></div>
+  <div class="curtain-line"></div>
+</div>
+
+<nav id="nav">
+  <div class="logo">FUTURE OF <span>VOICES</span></div>
+  <div class="nav-links">
+    <button type="button" onclick="goTo('manifesto')">Manifesto</button>
+    <button type="button" onclick="goTo('directory')">Voices</button>
+    <button type="button" onclick="goTo('join')">Join</button>
+  </div>
+  <button type="button" class="nav-cta" onclick="openRegister()">Be a Voice</button>
+  <button type="button" class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">✕</button>
+  <button type="button" onclick="mobileGoTo('manifesto')">Manifesto</button>
+  <button type="button" onclick="mobileGoTo('directory')">Voices</button>
+  <button type="button" onclick="mobileGoTo('join')">Join</button>
+  <button type="button" class="btn-gold" onclick="mobileOpenRegister()">Be a Voice</button>
+</div>
+
+<section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+
+  <div class="hero-content">
+    <div class="eyebrow">A Sonia Boost Ecosystem Project · Human Impact</div>
+    <h1 class="hero-title">
+      <span class="line1">FUTURE OF</span>
+      <span class="line2">VOICES</span>
+    </h1>
+    <div class="hero-byline">Dear Future by Sonia Boost</div>
+    <p>The voices the world listens to, speaking directly to the next generation. A video or a written word. One question. A legacy that inspires.</p>
+    <div class="hero-ctas">
+      <button type="button" class="btn-gold" onclick="goTo('directory')">Explore the Voices</button>
+      <button type="button" class="btn-outline" onclick="openRegister()">Be a Voice</button>
+    </div>
+  </div>
+
+  <div class="letterbox-bottom"><span>FUTURE OF VOICES — SEASON 01</span></div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>ACTORS ✦ ACTRESSES ✦ INFLUENCERS ✦ VISIONARIES ✦ INSPIRATION ✦ LEGACY ✦</span>
+    <span>ACTORS ✦ ACTRESSES ✦ INFLUENCERS ✦ VISIONARIES ✦ INSPIRATION ✦ LEGACY ✦</span>
+  </div>
+</div>
+
+<section id="manifesto">
+  <div class="manifesto reveal">
+    <div class="manifesto-line"></div>
+    <p>Every generation needs someone to tell them: <span>"you can do this too"</span>. We bring together actors, actresses, influencers and visionaries who have gone far, so they can give a 30-second video or a written word of truth to those who are just starting to dream.</p>
+  </div>
+</section>
+
+<section>
+  <div class="question-wrap reveal">
+    <span class="q-mark">"</span>
+    <h3>What would you tell your 10-year-old self to dare to dream bigger?</h3>
+    <div class="question-tag">This season's question</div>
+  </div>
+</section>
+
+<section id="directory">
+  <div class="section-label reveal">The Directory</div>
+  <h2 class="section-title reveal">Voices That Inspire</h2>
+  <p class="section-sub reveal">Filter by category and discover the message — on video or in writing — each voice left for the next generation.</p>
+  <div class="filters reveal">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="actors">Actors</button>
+    <button class="filter-btn" data-filter="actresses">Actresses</button>
+    <button class="filter-btn" data-filter="influencers">Influencers</button>
+    <button class="filter-btn" data-filter="visionaries">Visionaries</button>
+  </div>
+  <div class="grid reveal" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-state-icon">✦</div>
+    <p>The first voices are coming soon.</p>
+    <button class="btn-gold" onclick="openRegister()">Be the First Voice</button>
+  </div>
+</section>
+
+<section id="join">
+  <div class="section-label reveal">Join the Project</div>
+  <h2 class="section-title reveal">Become a Voice</h2>
+  <p class="section-sub reveal">A simple process, designed so any celebrity or team can take part in minutes — by video or in writing.</p>
+  <div class="steps">
+    <div class="step reveal" onclick="openRegister()">
+      <div class="step-num">01</div><h4>Register</h4>
+      <p>Create your profile with your category, bio and social links — or let our team manage it for you.</p>
+    </div>
+    <div class="step reveal" onclick="openRegister()">
+      <div class="step-num">02</div><h4>Choose Video or Written</h4>
+      <p>Upload a 30-second video, or write your message and add a photo instead.</p>
+    </div>
+    <div class="step reveal" onclick="openRegister()">
+      <div class="step-num">03</div><h4>Inspire</h4>
+      <p>Your voice gets published in the directory and shared to reach thousands of new generations.</p>
+    </div>
+  </div>
+  <div class="join-cta reveal"><button class="btn-gold" onclick="openRegister()">I Want to Be a Voice</button></div>
+</section>
+
+<footer>
+  <div class="logo">FUTURE OF <span>VOICES</span></div>
+  <div class="footer-links">
+    <button type="button" onclick="goTo('manifesto')">Manifesto</button>
+    <button type="button" onclick="goTo('directory')">Directory</button>
+    <button type="button" onclick="goTo('join')">Join</button>
+    <button type="button" onclick="showToast('Coming soon: full project page')">About the Project</button>
+    <button type="button" onclick="openLegal('privacyOverlay')">Privacy Policy</button>
+    <button type="button" onclick="openLegal('cookieOverlay')">Cookie Policy</button>
+    <button type="button" onclick="openLogin()">Admin</button>
+  </div>
+  <div class="footer-bottom">Future of Voices — part of the <span>Sonia Boost</span> ecosystem · Human Impact</div>
+  <div class="footer-copyright">Derechos de autor ©2026 The Wonder World Group. Reservados todos los derechos.</div>
+</footer>
+
+<!-- PROFILE MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-poster" id="modalPoster">
+      <span id="modalInit">EV</span>
+      <div class="play-icon" id="modalPosterIcon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-cat" id="modalCat">Actress</div>
+      <h2 id="modalName">Elena Duarte</h2>
+      <p id="modalBio">Coming soon: advice to inspire the next generation to dream without limits.</p>
+
+      <div class="video-bar" id="videoBar" onclick="openCurrentVideoUrl()">
+        <div class="mini-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+        <div class="progress"></div>
+        <span class="duration">0:30</span>
+      </div>
+
+      <div class="written-block" id="writtenBlock" style="display:none;">
+        <span class="quote-mark">"</span>
+        <p class="written-text" id="writtenText"></p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-gold" onclick="toggleShareMenu()">Share This Voice</button>
+        <button class="btn-outline" onclick="toggleFullProfile()">View Full Profile</button>
+      </div>
+      <div class="share-menu" id="shareMenu">
+        <button class="share-icon" onclick="shareTo('linkedin')" aria-label="Share on LinkedIn">in</button>
+        <button class="share-icon" onclick="shareTo('facebook')" aria-label="Share on Facebook">f</button>
+        <button class="share-icon" onclick="shareTo('twitter')" aria-label="Share on X">𝕏</button>
+        <button class="share-icon" onclick="shareTo('whatsapp')" aria-label="Share on WhatsApp">WA</button>
+        <button class="share-icon" onclick="shareTo('instagram')" aria-label="Copy caption for Instagram">IG</button>
+        <button class="share-icon" onclick="copyVoiceLink()" aria-label="Copy link">🔗</button>
+      </div>
+      <div class="modal-extra" id="modalExtra">
+        <div class="modal-extra-row"><span>Published</span><span id="modalDate">—</span></div>
+        <div class="modal-extra-row"><span>Times Shared</span><span>—</span></div>
+        <div class="modal-extra-row"><span>Public Link</span><span id="modalLink">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-bg" id="registerBg">
+  <div class="modal register-modal">
+    <button class="close-btn" onclick="closeRegister()">✕</button>
+    <div class="modal-body">
+      <div class="modal-cat">Join the Project</div>
+      <h2>Be a Voice</h2>
+      <p>Fill in your details. Your application will be reviewed by our team before publishing.</p>
+      <form id="registerForm" onsubmit="return submitRegister(event)">
+        <div class="form-row"><label>Full Name *</label><input type="text" required></div>
+        <div class="form-row">
+          <label>Category *</label>
+          <select required>
+            <option value="">Select...</option>
+            <option value="actors">Actor</option>
+            <option value="actresses">Actress</option>
+            <option value="influencers">Influencer</option>
+            <option value="visionaries">Visionary</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Email *</label><input type="email" required></div>
+        <div class="form-row"><label>Main Social Handle</label><input type="text" placeholder="@username"></div>
+        <div class="form-row"><label>Short Bio</label><textarea rows="3" placeholder="Tell us in 2 lines who you are..."></textarea></div>
+
+        <div class="form-row">
+          <label>Photo *</label>
+          <div class="upload-box" id="photoBox">
+            <input type="file" id="photoInput" accept="image/*" required onchange="previewPhoto(event)">
+            <div class="upload-placeholder" id="photoPlaceholder">+ Upload Photo</div>
+            <img id="photoPreview" style="display:none;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Message Type *</label>
+          <div class="type-toggle">
+            <button type="button" class="type-btn active" id="typeBtnVideo" data-type="video" onclick="setMessageType('video')">🎥 Video Message</button>
+            <button type="button" class="type-btn" id="typeBtnWritten" data-type="written" onclick="setMessageType('written')">✍️ Written Message</button>
+          </div>
+        </div>
+
+        <div class="form-row" id="videoUploadRow">
+          <label>Video (30 seconds)</label>
+          <div class="upload-box" id="videoBox">
+            <input type="file" id="videoInput" accept="video/*" onchange="previewVideo(event)">
+            <div class="upload-placeholder" id="videoPlaceholder">+ Upload Video</div>
+            <video id="videoPreview" style="display:none;" muted controls></video>
+          </div>
+        </div>
+
+        <div class="form-row" id="writtenMessageRow" style="display:none;">
+          <label>Your Written Message</label>
+          <textarea id="writtenMessageInput" rows="4" placeholder="Write your message to the next generation..."></textarea>
+        </div>
+
+        <label class="checkbox-row"><input type="checkbox" required><span>I agree to the image rights and terms of Future of Voices *</span></label>
+        <button type="submit" class="btn-gold" style="width:100%;margin-top:18px;">Submit Application</button>
+      </form>
+      <div id="registerSuccess" style="display:none;text-align:center;padding:20px 0;">
+        <div class="success-check">✓</div>
+        <h3>Application Received!</h3>
+        <p>Thank you for joining Future of Voices. Our team will review your profile and contact you soon.</p>
+        <button class="btn-outline" onclick="closeRegister()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN / ADMIN ACCESS MODAL -->
+<div class="modal-bg" id="loginBg">
+  <div class="modal register-modal">
+    <button class="close-btn" onclick="closeLogin()">✕</button>
+    <div class="modal-body">
+      <div class="modal-cat">Admin Access</div>
+      <h2>Log In</h2>
+
+      <div id="loginView">
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <div class="form-row"><label>Email *</label><input type="email" id="loginEmail" required></div>
+          <div class="form-row"><label>Password *</label><input type="password" id="loginPassword" required></div>
+          <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Log In</button>
+        </form>
+        <button class="btn-outline" style="width:100%;margin-top:12px;" onclick="showForgotView()">Forgot password?</button>
+      </div>
+
+      <div id="forgotView" style="display:none;">
+        <p>This is a prototype with no email service connected, so we can't send a reset link. Confirm your admin email and we'll generate a brand-new password for you right here.</p>
+        <div class="form-row"><label>Admin Email *</label><input type="email" id="forgotEmail" required></div>
+        <button class="btn-gold" style="width:100%;" onclick="handleForgotPassword()">Generate New Password</button>
+        <button class="btn-outline" style="width:100%;margin-top:12px;" onclick="showLoginView()">Back to Log In</button>
+      </div>
+
+      <div id="setupView" style="display:none;">
+        <p>No admin account exists yet for this site. Create one now.</p>
+        <div class="form-row"><label>Admin Email *</label><input type="email" id="setupEmail" required></div>
+        <div class="form-row"><label>Password * (min. 6 characters)</label><input type="password" id="setupPassword" required minlength="6"></div>
+        <button class="btn-gold" style="width:100%;" onclick="handleSetupAdmin()">Create Admin Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="modal-bg" id="adminBg">
+  <div class="modal admin-modal">
+    <button class="close-btn" onclick="closeAdminPanel()">✕</button>
+    <div class="modal-body">
+      <div class="admin-bar">
+        <div>
+          <div class="modal-cat">Admin Panel</div>
+          <h2 style="margin:8px 0 0;">Manage Voices</h2>
+        </div>
+        <button class="btn-outline" onclick="logoutAdmin()">Log Out</button>
+      </div>
+
+      <div class="admin-section-title">Published Voices</div>
+      <div class="admin-list" id="adminVoicesList"></div>
+
+      <div class="admin-section-title" id="adminFormTitle">Add New Voice</div>
+      <form id="adminForm" onsubmit="return handleAdminSubmit(event)">
+        <div class="form-row"><label>Full Name *</label><input type="text" id="adminName" required></div>
+        <div class="form-row">
+          <label>Category *</label>
+          <select id="adminCategory" required>
+            <option value="">Select...</option>
+            <option value="actors">Actor</option>
+            <option value="actresses">Actress</option>
+            <option value="influencers">Influencer</option>
+            <option value="visionaries">Visionary</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Photo (leave empty to keep current when editing)</label>
+          <div class="upload-box" id="adminPhotoBox">
+            <input type="file" id="adminPhotoInput" accept="image/*" onchange="previewAdminPhoto(event)">
+            <div class="upload-placeholder" id="adminPhotoPlaceholder">+ Upload Photo</div>
+            <img id="adminPhotoPreview" style="display:none;">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Message Type *</label>
+          <div class="type-toggle">
+            <button type="button" class="type-btn active" id="adminTypeBtnVideo" data-type="video" onclick="setAdminMessageType('video')">🎥 Video</button>
+            <button type="button" class="type-btn" id="adminTypeBtnWritten" data-type="written" onclick="setAdminMessageType('written')">✍️ Written</button>
+          </div>
+        </div>
+        <div class="form-row" id="adminVideoRow">
+          <label>Video URL (YouTube, Drive, etc.)</label>
+          <input type="url" id="adminVideoUrl" placeholder="https://...">
+        </div>
+        <div class="form-row" id="adminWrittenRow" style="display:none;">
+          <label>Written Message</label>
+          <textarea id="adminMessage" rows="3" placeholder="Their message to the next generation..."></textarea>
+        </div>
+        <button type="submit" class="btn-gold" id="adminSubmitBtn" style="width:100%;margin-top:8px;">Add Voice</button>
+        <button type="button" class="btn-outline" id="adminCancelEditBtn" style="width:100%;margin-top:10px;display:none;" onclick="cancelAdminEdit()">Cancel Edit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY PAGE -->
+<div class="legal-overlay" id="privacyOverlay">
+  <div class="legal-content">
+    <button class="close-btn legal-close" onclick="closeLegal('privacyOverlay')">✕</button>
+    <div class="legal-label">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p>BRIANYADS US LLC, sensitive to the needs of Internet users and aware of the importance of strict privacy regarding the personal information entrusted to us, provides this privacy statement to inform you of our policy on the treatment of personal data obtained from our visitors and users.</p>
+    <p>By reading, viewing or browsing this site, you accept these conditions. If you do not accept them, you must leave the site without making any use of it or its content, and without accessing any linked pages.</p>
+    <h3>Party Responsible for Data Processing</h3>
+    <p>The owner of this site and the party responsible for data processing is <strong>BRIANYADS US LLC</strong>. You can contact us at <strong>sprintogrowth@gmail.com</strong> or by mail at 2201 Menaul Blvd NE Ste A, Albuquerque, New Mexico 87107, USA.</p>
+    <h3>Purpose of Data Processing</h3>
+    <p>On our websites there are specific sections where you can enter your data to receive information about updates to our website and some of the programs we distribute. We assure you that any information you provide will be handled in a completely confidential manner.</p>
+  </div>
+</div>
+
+<!-- COOKIE POLICY PAGE -->
+<div class="legal-overlay" id="cookieOverlay">
+  <div class="legal-content">
+    <button class="close-btn legal-close" onclick="closeLegal('cookieOverlay')">✕</button>
+    <div class="legal-label">Legal</div>
+    <h1>Cookie Policy</h1>
+    <p>This site uses cookies.</p>
+    <p>We inform you that this website, operated by BRIANYADS US LLC, uses cookies.</p>
+    <p>Cookies are small text files sent to a browser from a web server to record a user's activity on a website, so that this information can be retrieved later while browsing other pages connected to the server that installed them.</p>
+    <p>Cookies typically store technical information, personal preferences, content personalization, usage statistics, links to social networks, access to user accounts, and similar data.</p>
+
+    <h3>Types of Cookies</h3>
+    <p>Below is a classification of cookies based on several categories. Note that a single cookie may fall into more than one category.</p>
+
+    <h3>By the entity that manages them</h3>
+    <ul>
+      <li><strong>First-party cookies:</strong> sent to the user's device from a computer or domain managed by the website owner itself, which provides the requested service.</li>
+      <li><strong>Third-party cookies:</strong> sent to the user's device from a computer or domain not managed by the website owner, but by another entity that processes the data collected through the cookies.</li>
+    </ul>
+
+    <h3>By the length of time they remain active</h3>
+    <ul>
+      <li><strong>Session cookies:</strong> collect and store data only while the user is accessing a web page.</li>
+      <li><strong>Persistent cookies:</strong> data remains stored on the device for a defined period, from a few minutes to several years.</li>
+    </ul>
+
+    <h3>By purpose</h3>
+    <ul>
+      <li><strong>Technical cookies:</strong> allow basic browsing and core functionality.</li>
+      <li><strong>Personalization cookies:</strong> remember general preferences such as language or region.</li>
+      <li><strong>Analytics cookies:</strong> measure activity and build browsing profiles to improve the service.</li>
+      <li><strong>Advertising cookies:</strong> manage advertising space based on edited content.</li>
+      <li><strong>Behavioral advertising cookies:</strong> build a profile from browsing habits to show relevant ads.</li>
+    </ul>
+
+    <h3>How to Disable Cookies in Major Browsers</h3>
+    <p>To configure cookie settings, follow the instructions for your browser or consult its help section: Safari, Firefox, Chrome, Opera, Internet Explorer, Edge.</p>
+
+    <h3>What Happens If You Don't Accept Cookies</h3>
+    <p>Declining cookies may prevent access to personalized content and services.</p>
+
+    <h3>Updates and Changes to This Cookie Policy</h3>
+    <p>BRIANYADS US LLC may modify this cookie policy in response to legislative or regulatory requirements, for technical reasons, or to reorganize the website. We therefore recommend that you review it periodically.</p>
+    <p>Owner and party responsible: <strong>BRIANYADS US LLC</strong>, 2201 Menaul Blvd NE Ste A, Albuquerque, New Mexico 87107, USA.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _sb = supabase.createClient(
+    'https://etwlatwcvajlsppybryz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xhdHdjdmFqbHNwcHlicnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzIxMDMsImV4cCI6MjA5ODAwODEwM30.vPgRuAMOTZRngLG1M2aHySD9EmQEnXIJa3Tn6gLwT1U'
+  );
+
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{ document.getElementById('curtain').style.display='none'; document.getElementById('curtainLogo').style.display='none'; document.body.style.overflow=''; }, 2100);
+
+  const ICONS = {
+    video: `<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>`,
+    written: `<svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4V4z"/></svg>`
+  };
+  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary'};
+
+  let voicesCache = [];
+  let currentVoice = null;
+  let editingIndex = null;
+  let adminSelectedType = 'video';
+  let selectedType = 'video';
+
+  function goTo(id){
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function toggleMobileMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
+  function mobileGoTo(id){ toggleMobileMenu(); setTimeout(()=> goTo(id), 300); }
+  function mobileOpenRegister(){ toggleMobileMenu(); setTimeout(()=> openRegister(), 300); }
+
+  function openLegal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeLegal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+  }
+
+  /* ---------- STORAGE (Supabase) ---------- */
+  async function loadVoices(){
+    const { data } = await _sb.from('fov_voices').select('*').order('created_at', { ascending: false });
+    voicesCache = data || [];
+    renderGrid();
+  }
+
+  async function uploadFile(bucket, path, file){
+    const { data, error } = await _sb.storage.from(bucket).upload(path, file, { upsert: true });
+    if(error) throw error;
+    const { data: { publicUrl } } = _sb.storage.from(bucket).getPublicUrl(path);
+    return publicUrl;
+  }
+
+  async function loadAdmin(){
+    const { data: { session } } = await _sb.auth.getSession();
+    return session ? { email: session.user.email } : null;
+  }
+
+  /* ---------- DIRECTORY GRID ---------- */
+  function renderGrid(){
+    const grid = document.getElementById('grid');
+    const filtersEl = document.querySelector('.filters');
+    grid.innerHTML = '';
+    if(voicesCache.length===0){
+      filtersEl.style.display='none';
+      grid.style.display='none';
+      document.getElementById('emptyState').style.display='block';
+      return;
+    }
+    filtersEl.style.display='flex';
+    grid.style.display='grid';
+    document.getElementById('emptyState').style.display='none';
+
+    voicesCache.forEach((v,i)=>{
+      const card = document.createElement('div');
+      card.className = 'card'; card.dataset.cat = v.cat;
+      const thumb = v.photo_url ? `<img class="card-photo" src="${v.photo_url}">` : `<div class="card-init">${v.init||'?'}</div>`;
+      card.innerHTML = `
+        ${thumb}
+        <div class="play-icon">${ICONS[v.type]}</div>
+        <div class="card-overlay">
+          <div class="card-name">${v.name}</div>
+          <span class="card-cat">${v.label} · ${v.type==='video' ? 'Video' : 'Written'}</span>
+        </div>`;
+      card.addEventListener('click', ()=> openModal(i));
+      grid.appendChild(card);
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.onclick = ()=>{
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        document.querySelectorAll('.card').forEach(c=> c.classList.toggle('hidden', f!=='all' && c.dataset.cat!==f));
+      };
+    });
+  }
+
+  /* ---------- PROFILE MODAL ---------- */
+  const modalBg = document.getElementById('modalBg');
+  function openModal(i){
+    const v = voicesCache[i];
+    currentVoice = v;
+    const poster = document.getElementById('modalPoster');
+    const existingImg = poster.querySelector('img');
+    if(existingImg) existingImg.remove();
+    if(v.photo_url){
+      const img = document.createElement('img');
+      img.src = v.photo_url;
+      poster.insertBefore(img, poster.firstChild);
+      document.getElementById('modalInit').style.display='none';
+    } else {
+      document.getElementById('modalInit').style.display='block';
+      document.getElementById('modalInit').textContent = v.init || '?';
+    }
+    document.getElementById('modalCat').textContent = v.label;
+    document.getElementById('modalName').textContent = v.name;
+    document.getElementById('modalPosterIcon').innerHTML = ICONS[v.type];
+
+    if(v.type==='video'){
+      document.getElementById('modalBio').textContent = `A video message from ${v.name} to inspire the next generation to dream without limits.`;
+      document.getElementById('videoBar').style.display='flex';
+      document.getElementById('writtenBlock').style.display='none';
+    } else {
+      document.getElementById('modalBio').textContent = `A written message from ${v.name} to inspire the next generation to dream without limits.`;
+      document.getElementById('videoBar').style.display='none';
+      document.getElementById('writtenBlock').style.display='block';
+      document.getElementById('writtenText').textContent = v.message || '';
+    }
+
+    const slug = v.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+    document.getElementById('modalLink').textContent = `soniaboost.com/future-of-voices/voices/${slug}`;
+    document.getElementById('modalExtra').classList.remove('open');
+    document.getElementById('shareMenu').classList.remove('open');
+    modalBg.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(){ modalBg.classList.remove('open'); document.body.style.overflow=''; }
+  modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
+  function openCurrentVideoUrl(){
+    if(currentVoice && currentVoice.videoUrl) window.open(currentVoice.videoUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  function toggleFullProfile(){ document.getElementById('modalExtra').classList.toggle('open'); }
+  function getShareData(){
+    const slug = currentVoice.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+    const url = `https://soniaboost.com/future-of-voices/voices/${slug}`;
+    const text = `${currentVoice.name}'s message to the next generation — Future of Voices`;
+    return {url, text};
+  }
+  function toggleShareMenu(){ document.getElementById('shareMenu').classList.toggle('open'); }
+  function shareTo(platform){
+    if(!currentVoice) return;
+    const {url, text} = getShareData();
+    if(platform==='instagram'){
+      if(navigator.clipboard){
+        navigator.clipboard.writeText(`${text}\n${url}`).then(()=> showToast('Caption copied — paste it into your Instagram post or story'));
+      } else { showToast('Copy not supported on this browser'); }
+      return;
+    }
+    let shareUrl = '';
+    if(platform==='facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    if(platform==='linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    if(platform==='twitter') shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+    if(platform==='whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+  }
+  function copyVoiceLink(){
+    if(!currentVoice) return;
+    const {url} = getShareData();
+    if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Link copied to clipboard')); }
+    else { showToast(url); }
+  }
+
+  /* ---------- REGISTER FORM ---------- */
+  function setMessageType(type){
+    selectedType = type;
+    document.getElementById('typeBtnVideo').classList.toggle('active', type==='video');
+    document.getElementById('typeBtnWritten').classList.toggle('active', type==='written');
+    document.getElementById('videoUploadRow').style.display = type==='video' ? 'flex' : 'none';
+    document.getElementById('videoUploadRow').style.flexDirection = 'column';
+    document.getElementById('writtenMessageRow').style.display = type==='written' ? 'flex' : 'none';
+    document.getElementById('writtenMessageRow').style.flexDirection = 'column';
+  }
+  const registerBg = document.getElementById('registerBg');
+  function openRegister(){ registerBg.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeRegister(){
+    registerBg.classList.remove('open'); document.body.style.overflow='';
+    const form = document.getElementById('registerForm');
+    form.reset(); form.style.display='block';
+    document.getElementById('registerSuccess').style.display='none';
+    document.getElementById('photoPreview').style.display='none';
+    document.getElementById('photoPlaceholder').style.display='flex';
+    document.getElementById('videoPreview').style.display='none';
+    document.getElementById('videoPlaceholder').style.display='flex';
+    setMessageType('video');
+  }
+  registerBg.addEventListener('click', e=>{ if(e.target===registerBg) closeRegister(); });
+  function previewPhoto(e){
+    const file = e.target.files[0]; if(!file) return;
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById('photoPreview');
+    img.src = url; img.style.display='block';
+    document.getElementById('photoPlaceholder').style.display='none';
+  }
+  function previewVideo(e){
+    const file = e.target.files[0]; if(!file) return;
+    const url = URL.createObjectURL(file);
+    const vid = document.getElementById('videoPreview');
+    vid.src = url; vid.style.display='block';
+    document.getElementById('videoPlaceholder').style.display='none';
+  }
+  async function submitRegister(e){
+    e.preventDefault();
+    const name = document.getElementById('registerForm').querySelector('input[type=text]').value.trim();
+    const email = document.getElementById('registerForm').querySelector('input[type=email]').value.trim();
+    const cat = document.getElementById('registerForm').querySelector('select').value;
+    const social = document.getElementById('registerForm').querySelectorAll('input[type=text]')[1]?.value.trim() || '';
+    const bio = document.getElementById('registerForm').querySelector('textarea')?.value.trim() || '';
+
+    const reg = { name, email, cat, social_handle: social, bio, type: selectedType };
+
+    if(selectedType==='video'){
+      const vid = document.getElementById('videoInput');
+      if(!vid.files || vid.files.length===0){ showToast('Please upload your 30-second video'); return false; }
+      const ext = vid.files[0].name.split('.').pop();
+      const path = `registrations/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${ext}`;
+      try{ reg.video_url = await uploadFile('fov-media', path, vid.files[0]); }
+      catch(err){ showToast('Video upload failed — please try again'); return false; }
+    } else {
+      const msg = document.getElementById('writtenMessageInput').value.trim();
+      if(!msg){ showToast('Please write your message'); return false; }
+      reg.message = msg;
+    }
+
+    const { error } = await _sb.from('fov_registrations').insert(reg);
+    if(error){ showToast('Submission failed — please try again'); return false; }
+
+    document.getElementById('registerForm').style.display='none';
+    setTimeout(()=>{ document.getElementById('registerSuccess').style.display='block'; }, 700);
+    return false;
+  }
+
+  /* ---------- LOGIN / FORGOT PASSWORD ---------- */
+  const loginBg = document.getElementById('loginBg');
+  async function openLogin(){
+    document.getElementById('forgotView').style.display='none';
+    document.getElementById('setupView').style.display='none';
+    document.getElementById('loginView').style.display='block';
+    loginBg.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeLogin(){ loginBg.classList.remove('open'); document.body.style.overflow=''; }
+  loginBg.addEventListener('click', e=>{ if(e.target===loginBg) closeLogin(); });
+  function showLoginView(){
+    document.getElementById('loginView').style.display='block';
+    document.getElementById('forgotView').style.display='none';
+  }
+  function showForgotView(){
+    document.getElementById('loginView').style.display='none';
+    document.getElementById('forgotView').style.display='block';
+  }
+  async function handleSetupAdmin(){
+    showToast('Admin accounts are managed in the Supabase dashboard — contact your administrator');
+  }
+  async function handleLogin(e){
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+    const { error } = await _sb.auth.signInWithPassword({ email, password: pass });
+    if(error){ showToast('Incorrect email or password'); return false; }
+    closeLogin();
+    showToast('Welcome back');
+    enterAdminMode();
+    return false;
+  }
+  async function handleForgotPassword(){
+    const email = document.getElementById('forgotEmail').value.trim();
+    if(!email){ showToast('Enter your email address'); return; }
+    const { error } = await _sb.auth.resetPasswordForEmail(email);
+    if(error){ showToast('Could not send reset email'); return; }
+    showToast('Password reset email sent — check your inbox');
+    showLoginView();
+  }
+  async function logoutAdmin(){
+    await _sb.auth.signOut();
+    closeAdminPanel();
+    showToast('Logged out');
+  }
+
+  /* ---------- ADMIN PANEL ---------- */
+  const adminBg = document.getElementById('adminBg');
+  function enterAdminMode(){
+    cancelAdminEdit();
+    renderAdminList();
+    adminBg.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeAdminPanel(){ adminBg.classList.remove('open'); document.body.style.overflow=''; }
+  adminBg.addEventListener('click', e=>{ if(e.target===adminBg) closeAdminPanel(); });
+
+  function renderAdminList(){
+    const container = document.getElementById('adminVoicesList');
+    if(voicesCache.length===0){
+      container.innerHTML = '<div class="admin-empty">No voices yet — add the first one below.</div>';
+      return;
+    }
+    container.innerHTML = voicesCache.map((v,i)=>`
+      <div class="admin-row">
+        <span class="admin-row-name">${v.name} <span class="admin-row-tag">${v.label} · ${v.type}</span></span>
+        <span class="admin-row-actions">
+          <button type="button" onclick="editVoice(${i})">Edit</button>
+          <button type="button" onclick="deleteVoice(${i})">Delete</button>
+        </span>
+      </div>`).join('');
+  }
+
+  function setAdminMessageType(type){
+    adminSelectedType = type;
+    document.getElementById('adminTypeBtnVideo').classList.toggle('active', type==='video');
+    document.getElementById('adminTypeBtnWritten').classList.toggle('active', type==='written');
+    document.getElementById('adminVideoRow').style.display = type==='video' ? 'flex' : 'none';
+    document.getElementById('adminVideoRow').style.flexDirection='column';
+    document.getElementById('adminWrittenRow').style.display = type==='written' ? 'flex' : 'none';
+    document.getElementById('adminWrittenRow').style.flexDirection='column';
+  }
+
+  function previewAdminPhoto(e){
+    const file = e.target.files[0]; if(!file) return;
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById('adminPhotoPreview');
+    img.src = url; img.style.display='block';
+    document.getElementById('adminPhotoPlaceholder').style.display='none';
+  }
+
+  function editVoice(i){
+    editingIndex = i;
+    const v = voicesCache[i];
+    document.getElementById('adminName').value = v.name;
+    document.getElementById('adminCategory').value = v.cat;
+    setAdminMessageType(v.type);
+    if(v.type==='written'){ document.getElementById('adminMessage').value = v.message || ''; }
+    else { document.getElementById('adminVideoUrl').value = v.video_url || ''; }
+    document.getElementById('adminFormTitle').textContent = 'Edit Voice';
+    document.getElementById('adminSubmitBtn').textContent = 'Save Changes';
+    document.getElementById('adminCancelEditBtn').style.display='block';
+    document.getElementById('adminForm').scrollIntoView({behavior:'smooth'});
+  }
+
+  function cancelAdminEdit(){
+    editingIndex = null;
+    document.getElementById('adminForm').reset();
+    document.getElementById('adminPhotoPreview').style.display='none';
+    document.getElementById('adminPhotoPlaceholder').style.display='flex';
+    setAdminMessageType('video');
+    document.getElementById('adminFormTitle').textContent = 'Add New Voice';
+    document.getElementById('adminSubmitBtn').textContent = 'Add Voice';
+    document.getElementById('adminCancelEditBtn').style.display='none';
+  }
+
+  async function deleteVoice(i){
+    const voice = voicesCache[i];
+    const { error } = await _sb.from('fov_voices').delete().eq('id', voice.id);
+    if(error){ showToast('Delete failed — please try again'); return; }
+    voicesCache.splice(i,1);
+    renderAdminList();
+    renderGrid();
+    showToast('Voice deleted');
+  }
+
+  async function handleAdminSubmit(e){
+    e.preventDefault();
+    const name = document.getElementById('adminName').value.trim();
+    const cat = document.getElementById('adminCategory').value;
+    if(!name || !cat){ showToast('Name and category are required'); return false; }
+    const init = name.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const voice = { name, cat, label: LABELS[cat], init, type: adminSelectedType };
+
+    if(adminSelectedType==='written'){
+      voice.message = document.getElementById('adminMessage').value.trim();
+    } else {
+      voice.video_url = document.getElementById('adminVideoUrl').value.trim();
+    }
+
+    const photoInput = document.getElementById('adminPhotoInput');
+    if(photoInput.files[0]){
+      const ext = photoInput.files[0].name.split('.').pop();
+      const path = `photos/${Date.now()}-${init.toLowerCase()}.${ext}`;
+      try{ voice.photo_url = await uploadFile('fov-media', path, photoInput.files[0]); }
+      catch(err){ showToast('Photo upload failed'); return false; }
+    } else if(editingIndex!==null){
+      voice.photo_url = voicesCache[editingIndex].photo_url;
+    }
+
+    let error;
+    if(editingIndex!==null){
+      const id = voicesCache[editingIndex].id;
+      ({ error } = await _sb.from('fov_voices').update(voice).eq('id', id));
+      if(!error) voicesCache[editingIndex] = { ...voice, id };
+    } else {
+      const { data, error: insertErr } = await _sb.from('fov_voices').insert(voice).select().single();
+      error = insertErr;
+      if(!error) voicesCache.unshift(data);
+    }
+
+    if(error){ showToast('Save failed — please try again'); return false; }
+    cancelAdminEdit();
+    renderAdminList();
+    renderGrid();
+    showToast('Saved');
+    return false;
+  }
+
+  /* ---------- GLOBAL ---------- */
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){
+      closeModal(); closeRegister(); closeLogin(); closeAdminPanel();
+      closeLegal('privacyOverlay'); closeLegal('cookieOverlay');
+      document.getElementById('mobileMenu').classList.remove('open');
+    }
+  });
+  window.addEventListener('scroll', ()=>{
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY>40);
+  });
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); });
+  },{threshold:0.15});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+  loadVoices();
+</script>
+
+</body>
+</html>
