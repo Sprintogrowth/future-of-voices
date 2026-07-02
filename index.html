@@ -735,9 +735,9 @@
       grid.appendChild(card);
     });
 
-    document.querySelectorAll('.filter-btn').forEach(btn=>{
+    document.querySelectorAll('.filters .filter-btn').forEach(btn=>{
       btn.onclick = ()=>{
-        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.filters .filter-btn').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const f = btn.dataset.filter;
         document.querySelectorAll('.card').forEach(c=> c.classList.toggle('hidden', f!=='all' && c.dataset.cat!==f));
