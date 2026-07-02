@@ -866,6 +866,14 @@
 
     const reg = { name, email, cat, social_handle: social, bio, type: selectedType };
 
+    const photo = document.getElementById('photoInput');
+    if(photo.files && photo.files.length > 0){
+      const pext = photo.files[0].name.split('.').pop();
+      const ppath = `registrations/photos/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${pext}`;
+      try{ reg.photo_url = await uploadFile('fov-media', ppath, photo.files[0]); }
+      catch(err){ showToast('Photo upload failed — please try again'); return false; }
+    }
+
     if(selectedType==='video'){
       const vid = document.getElementById('videoInput');
       if(vid.files && vid.files.length > 0){
@@ -938,6 +946,7 @@
     if(tab==='registrations') loadRegistrations();
   }
 
+  let regsCache = [];
   async function loadRegistrations(){
     const container = document.getElementById('regsList');
     container.innerHTML = '<div class="admin-empty">Loading...</div>';
@@ -946,6 +955,7 @@
       container.innerHTML = '<div class="admin-empty">No submissions yet.</div>';
       return;
     }
+    regsCache = data;
     container.innerHTML = data.map(r => `
       <div style="background:var(--black3);border:1px solid var(--line);border-radius:10px;padding:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
@@ -961,7 +971,36 @@
         ${r.bio ? `<div style="font-size:0.75rem;color:var(--gray);margin-top:4px;"><span style="color:var(--gold);">Bio:</span> ${r.bio}</div>` : ''}
         ${r.message ? `<div style="font-size:0.75rem;color:var(--cream);margin-top:8px;padding:10px;background:var(--black2);border-radius:6px;">${r.message}</div>` : ''}
         ${r.video_url ? `<div style="margin-top:10px;"><video src="${r.video_url}" controls preload="metadata" style="width:100%;max-height:320px;border-radius:8px;background:var(--black2);border:1px solid var(--line);"></video></div>` : ''}
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+          ${r.published
+            ? `<span style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">✓ Published to directory</span>`
+            : `<button class="btn-gold" style="padding:10px 22px;font-size:0.7rem;" onclick="publishSubmission('${r.id}')">Publish to Directory</button>`}
+        </div>
       </div>`).join('');
+  }
+
+  async function publishSubmission(id){
+    const r = regsCache.find(x => x.id === id);
+    if(!r){ showToast('Submission not found'); return; }
+    const init = r.name.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const voice = {
+      name: r.name,
+      cat: r.cat,
+      label: LABELS[r.cat] || r.cat,
+      init,
+      type: r.type,
+      video_url: r.video_url || null,
+      message: r.message || null,
+      photo_url: r.photo_url || null
+    };
+    const { data, error } = await _sb.from('fov_voices').insert(voice).select().single();
+    if(error){ console.error(error); showToast('Publish failed — please try again'); return; }
+    await _sb.from('fov_registrations').update({ published: true }).eq('id', id);
+    voicesCache.unshift(data);
+    renderGrid();
+    renderAdminList();
+    loadRegistrations();
+    showToast(`${r.name} is now live in the directory`);
   }
 
   function enterAdminMode(){
