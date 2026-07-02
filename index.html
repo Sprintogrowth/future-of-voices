@@ -779,7 +779,7 @@
   function closeModal(){ modalBg.classList.remove('open'); document.body.style.overflow=''; }
   modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
   function openCurrentVideoUrl(){
-    if(currentVoice && currentVoice.videoUrl) window.open(currentVoice.videoUrl, '_blank', 'noopener,noreferrer');
+    if(currentVoice && currentVoice.video_url) window.open(currentVoice.video_url, '_blank', 'noopener,noreferrer');
   }
 
   function toggleFullProfile(){ document.getElementById('modalExtra').classList.toggle('open'); }
