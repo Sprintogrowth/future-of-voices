@@ -413,10 +413,10 @@
       <h2>Be a Voice</h2>
       <p>Fill in your details. Your application will be reviewed by our team before publishing.</p>
       <form id="registerForm" onsubmit="return submitRegister(event)">
-        <div class="form-row"><label>Full Name *</label><input type="text" required></div>
+        <div class="form-row"><label>Full Name *</label><input id="regName" type="text" required></div>
         <div class="form-row">
           <label>Category *</label>
-          <select required>
+          <select id="regCat" required>
             <option value="">Select...</option>
             <option value="actors">Actor</option>
             <option value="actresses">Actress</option>
@@ -424,9 +424,9 @@
             <option value="visionaries">Visionary</option>
           </select>
         </div>
-        <div class="form-row"><label>Email *</label><input type="email" required></div>
-        <div class="form-row"><label>Main Social Handle</label><input type="text" placeholder="@username"></div>
-        <div class="form-row"><label>Short Bio</label><textarea rows="3" placeholder="Tell us in 2 lines who you are..."></textarea></div>
+        <div class="form-row"><label>Email *</label><input id="regEmail" type="email" required></div>
+        <div class="form-row"><label>Main Social Handle</label><input id="regSocial" type="text" placeholder="@username"></div>
+        <div class="form-row"><label>Short Bio</label><textarea id="regBio" rows="3" placeholder="Tell us in 2 lines who you are..."></textarea></div>
 
         <div class="form-row">
           <label>Photo *</label>
@@ -858,21 +858,22 @@
   }
   async function submitRegister(e){
     e.preventDefault();
-    const name = document.getElementById('registerForm').querySelector('input[type=text]').value.trim();
-    const email = document.getElementById('registerForm').querySelector('input[type=email]').value.trim();
-    const cat = document.getElementById('registerForm').querySelector('select').value;
-    const social = document.getElementById('registerForm').querySelectorAll('input[type=text]')[1]?.value.trim() || '';
-    const bio = document.getElementById('registerForm').querySelector('textarea')?.value.trim() || '';
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const cat   = document.getElementById('regCat').value;
+    const social= document.getElementById('regSocial').value.trim();
+    const bio   = document.getElementById('regBio').value.trim();
 
     const reg = { name, email, cat, social_handle: social, bio, type: selectedType };
 
     if(selectedType==='video'){
       const vid = document.getElementById('videoInput');
-      if(!vid.files || vid.files.length===0){ showToast('Please upload your 30-second video'); return false; }
-      const ext = vid.files[0].name.split('.').pop();
-      const path = `registrations/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${ext}`;
-      try{ reg.video_url = await uploadFile('fov-media', path, vid.files[0]); }
-      catch(err){ showToast('Video upload failed — please try again'); return false; }
+      if(vid.files && vid.files.length > 0){
+        const ext = vid.files[0].name.split('.').pop();
+        const path = `registrations/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${ext}`;
+        try{ reg.video_url = await uploadFile('fov-media', path, vid.files[0]); }
+        catch(err){ showToast('Video upload failed — please try again'); return false; }
+      }
     } else {
       const msg = document.getElementById('writtenMessageInput').value.trim();
       if(!msg){ showToast('Please write your message'); return false; }
@@ -880,7 +881,7 @@
     }
 
     const { error } = await _sb.from('fov_registrations').insert(reg);
-    if(error){ showToast('Submission failed — please try again'); return false; }
+    if(error){ console.error(error); showToast('Submission failed — please try again'); return false; }
 
     document.getElementById('registerForm').style.display='none';
     setTimeout(()=>{ document.getElementById('registerSuccess').style.display='block'; }, 700);
