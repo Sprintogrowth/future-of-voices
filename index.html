@@ -906,33 +906,25 @@
     document.getElementById('loginView').style.display='none';
     document.getElementById('forgotView').style.display='block';
   }
-  async function handleSetupAdmin(){
-    showToast('Admin accounts are managed in the Supabase dashboard — contact your administrator');
-  }
-  async function handleLogin(e){
+  const ADMIN_EMAIL = 'soniaboost.ai@gmail.com';
+  const ADMIN_PASS  = 'futurecannes!!!@@-';
+
+  function handleSetupAdmin(){ showToast('Contact your administrator to set up access'); }
+  function handleLogin(e){
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass = document.getElementById('loginPassword').value;
-    const { error } = await _sb.auth.signInWithPassword({ email, password: pass });
-    if(error){ showToast('Incorrect email or password'); return false; }
-    closeLogin();
-    showToast('Welcome back');
-    enterAdminMode();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPassword').value;
+    if(email === ADMIN_EMAIL && pass === ADMIN_PASS){
+      closeLogin();
+      showToast('Welcome back');
+      enterAdminMode();
+    } else {
+      showToast('Incorrect email or password');
+    }
     return false;
   }
-  async function handleForgotPassword(){
-    const email = document.getElementById('forgotEmail').value.trim();
-    if(!email){ showToast('Enter your email address'); return; }
-    const { error } = await _sb.auth.resetPasswordForEmail(email);
-    if(error){ showToast('Could not send reset email'); return; }
-    showToast('Password reset email sent — check your inbox');
-    showLoginView();
-  }
-  async function logoutAdmin(){
-    await _sb.auth.signOut();
-    closeAdminPanel();
-    showToast('Logged out');
-  }
+  function handleForgotPassword(){ showToast('Contact your administrator to reset your password'); }
+  function logoutAdmin(){ closeAdminPanel(); showToast('Logged out'); }
 
   /* ---------- ADMIN PANEL ---------- */
   const adminBg = document.getElementById('adminBg');
