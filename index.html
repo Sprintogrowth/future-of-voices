@@ -856,8 +856,14 @@
     vid.src = url; vid.style.display='block';
     document.getElementById('videoPlaceholder').style.display='none';
   }
+  let _submitting = false;
   async function submitRegister(e){
     e.preventDefault();
+    if(_submitting) return false;
+    _submitting = true;
+    const submitBtn = e.target.querySelector('button[type=submit]');
+    if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+    try{
     const name  = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const cat   = document.getElementById('regCat').value;
@@ -894,6 +900,10 @@
     document.getElementById('registerForm').style.display='none';
     setTimeout(()=>{ document.getElementById('registerSuccess').style.display='block'; }, 700);
     return false;
+    } finally {
+      _submitting = false;
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
+    }
   }
 
   /* ---------- LOGIN / FORGOT PASSWORD ---------- */
@@ -959,9 +969,13 @@
     container.innerHTML = data.map(r => `
       <div style="background:var(--black3);border:1px solid var(--line);border-radius:10px;padding:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-weight:600;color:var(--cream);">${r.name}</span>
+          <span style="display:flex;align-items:center;gap:10px;">
+            ${r.photo_url ? `<img src="${r.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--line);">` : ''}
+            <span style="font-weight:600;color:var(--cream);">${r.name}</span>
+          </span>
           <span style="font-size:0.68rem;color:var(--gray);">${new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
         </div>
+        ${r.photo_url ? `<div style="margin:8px 0;"><img src="${r.photo_url}" style="max-width:160px;border-radius:8px;border:1px solid var(--line);"></div>` : ''}
         <div style="font-size:0.75rem;color:var(--gray);line-height:1.8;">
           <span style="color:var(--gold);">Email:</span> ${r.email || '—'} &nbsp;·&nbsp;
           <span style="color:var(--gold);">Category:</span> ${r.cat || '—'} &nbsp;·&nbsp;
