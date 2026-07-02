@@ -514,24 +514,19 @@
       <div class="admin-bar">
         <div>
           <div class="modal-cat">Admin Panel</div>
-          <h2 style="margin:8px 0 0;">Manage Voices</h2>
+          <h2 style="margin:8px 0 0;">Submissions</h2>
         </div>
         <button class="btn-outline" onclick="logoutAdmin()">Log Out</button>
       </div>
 
-      <div style="display:flex;gap:10px;margin-bottom:20px;">
-        <button class="filter-btn active" id="tabVoices" onclick="switchTab('voices')">Voices</button>
-        <button class="filter-btn" id="tabRegs" onclick="switchTab('registrations')">Submissions</button>
-      </div>
-
-      <!-- REGISTRATIONS TAB -->
-      <div id="regsPanel" style="display:none;">
+      <!-- REGISTRATIONS -->
+      <div id="regsPanel">
         <div class="admin-section-title">Form Submissions</div>
         <div id="regsList" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
 
-      <!-- VOICES TAB -->
-      <div id="voicesPanel">
+      <!-- VOICES (hidden — publishing is done from Submissions) -->
+      <div id="voicesPanel" style="display:none;">
       <div class="admin-section-title">Published Voices</div>
       <div class="admin-list" id="adminVoicesList"></div>
 
@@ -948,13 +943,6 @@
   /* ---------- ADMIN PANEL ---------- */
   const adminBg = document.getElementById('adminBg');
 
-  function switchTab(tab){
-    document.getElementById('tabVoices').classList.toggle('active', tab==='voices');
-    document.getElementById('tabRegs').classList.toggle('active', tab==='registrations');
-    document.getElementById('voicesPanel').style.display = tab==='voices' ? 'block' : 'none';
-    document.getElementById('regsPanel').style.display = tab==='registrations' ? 'block' : 'none';
-    if(tab==='registrations') loadRegistrations();
-  }
 
   let regsCache = [];
   async function loadRegistrations(){
@@ -1018,9 +1006,7 @@
   }
 
   function enterAdminMode(){
-    cancelAdminEdit();
-    renderAdminList();
-    switchTab('voices');
+    loadRegistrations();
     adminBg.classList.add('open');
     document.body.style.overflow='hidden';
   }
