@@ -372,10 +372,8 @@
       <h2 id="modalName">Elena Duarte</h2>
       <p id="modalBio">Coming soon: advice to inspire the next generation to dream without limits.</p>
 
-      <div class="video-bar" id="videoBar" onclick="openCurrentVideoUrl()">
-        <div class="mini-play"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
-        <div class="progress"></div>
-        <span class="duration">0:30</span>
+      <div id="videoBar" style="margin-bottom:26px;">
+        <video id="modalVideo" controls preload="metadata" style="width:100%;max-height:300px;border-radius:12px;background:var(--black2);border:1px solid var(--line);"></video>
       </div>
 
       <div class="written-block" id="writtenBlock" style="display:none;">
@@ -760,7 +758,8 @@
 
     if(v.type==='video'){
       document.getElementById('modalBio').textContent = `A video message from ${v.name} to inspire the next generation to dream without limits.`;
-      document.getElementById('videoBar').style.display='flex';
+      document.getElementById('videoBar').style.display='block';
+      document.getElementById('modalVideo').src = v.video_url || '';
       document.getElementById('writtenBlock').style.display='none';
     } else {
       document.getElementById('modalBio').textContent = `A written message from ${v.name} to inspire the next generation to dream without limits.`;
@@ -776,7 +775,11 @@
     modalBg.classList.add('open');
     document.body.style.overflow='hidden';
   }
-  function closeModal(){ modalBg.classList.remove('open'); document.body.style.overflow=''; }
+  function closeModal(){
+    modalBg.classList.remove('open'); document.body.style.overflow='';
+    const mv = document.getElementById('modalVideo');
+    if(mv){ mv.pause(); mv.removeAttribute('src'); mv.load(); }
+  }
   modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
   function openCurrentVideoUrl(){
     if(currentVoice && currentVoice.video_url) window.open(currentVoice.video_url, '_blank', 'noopener,noreferrer');
