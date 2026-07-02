@@ -365,7 +365,6 @@
     <button class="close-btn" onclick="closeModal()">✕</button>
     <div class="modal-poster" id="modalPoster">
       <span id="modalInit">EV</span>
-      <div class="play-icon" id="modalPosterIcon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
     </div>
     <div class="modal-body">
       <div class="modal-cat" id="modalCat">Actress</div>
@@ -754,7 +753,6 @@
     }
     document.getElementById('modalCat').textContent = v.label;
     document.getElementById('modalName').textContent = v.name;
-    document.getElementById('modalPosterIcon').innerHTML = ICONS[v.type];
 
     if(v.type==='video'){
       document.getElementById('modalBio').textContent = `A video message from ${v.name} to inspire the next generation to dream without limits.`;
