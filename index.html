@@ -960,7 +960,7 @@
         ${r.social_handle ? `<div style="font-size:0.75rem;color:var(--gray);margin-top:4px;"><span style="color:var(--gold);">Social:</span> ${r.social_handle}</div>` : ''}
         ${r.bio ? `<div style="font-size:0.75rem;color:var(--gray);margin-top:4px;"><span style="color:var(--gold);">Bio:</span> ${r.bio}</div>` : ''}
         ${r.message ? `<div style="font-size:0.75rem;color:var(--cream);margin-top:8px;padding:10px;background:var(--black2);border-radius:6px;">${r.message}</div>` : ''}
-        ${r.video_url ? `<div style="margin-top:8px;"><a href="${r.video_url}" target="_blank" rel="noopener" style="font-size:0.75rem;color:var(--gold);text-decoration:underline;">View uploaded video</a></div>` : ''}
+        ${r.video_url ? `<div style="margin-top:10px;"><video src="${r.video_url}" controls preload="metadata" style="width:100%;max-height:320px;border-radius:8px;background:var(--black2);border:1px solid var(--line);"></video></div>` : ''}
       </div>`).join('');
   }
 
