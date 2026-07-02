@@ -516,13 +516,18 @@
         <button class="btn-outline" onclick="logoutAdmin()">Log Out</button>
       </div>
 
+      <div style="display:flex;gap:10px;margin-bottom:20px;">
+        <button class="filter-btn active" id="tabRegs" onclick="switchTab('registrations')">Submissions</button>
+        <button class="filter-btn" id="tabVoices" onclick="switchTab('voices')">Add / Manage Voices</button>
+      </div>
+
       <!-- REGISTRATIONS -->
       <div id="regsPanel">
         <div class="admin-section-title">Form Submissions</div>
         <div id="regsList" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
 
-      <!-- VOICES (hidden — publishing is done from Submissions) -->
+      <!-- VOICES: add someone manually (with their permission) or edit/delete published ones -->
       <div id="voicesPanel" style="display:none;">
       <div class="admin-section-title">Published Voices</div>
       <div class="admin-list" id="adminVoicesList"></div>
@@ -556,7 +561,13 @@
           </div>
         </div>
         <div class="form-row" id="adminVideoRow">
-          <label>Video URL (YouTube, Drive, etc.)</label>
+          <label>Video File (upload)</label>
+          <div class="upload-box">
+            <input type="file" id="adminVideoInput" accept="video/*" onchange="previewAdminVideo(event)">
+            <div class="upload-placeholder" id="adminVideoPlaceholder">+ Upload Video</div>
+            <video id="adminVideoPreview" style="display:none;" muted controls></video>
+          </div>
+          <label style="margin-top:8px;">Or paste a Video URL</label>
           <input type="url" id="adminVideoUrl" placeholder="https://...">
         </div>
         <div class="form-row" id="adminWrittenRow" style="display:none;">
@@ -1006,8 +1017,17 @@
     showToast(`${r.name} is now live in the directory`);
   }
 
+  function switchTab(tab){
+    document.getElementById('tabRegs').classList.toggle('active', tab==='registrations');
+    document.getElementById('tabVoices').classList.toggle('active', tab==='voices');
+    document.getElementById('regsPanel').style.display = tab==='registrations' ? 'block' : 'none';
+    document.getElementById('voicesPanel').style.display = tab==='voices' ? 'block' : 'none';
+    if(tab==='registrations') loadRegistrations();
+    else { cancelAdminEdit(); renderAdminList(); }
+  }
+
   function enterAdminMode(){
-    loadRegistrations();
+    switchTab('registrations');
     adminBg.classList.add('open');
     document.body.style.overflow='hidden';
   }
@@ -1047,6 +1067,13 @@
     img.src = url; img.style.display='block';
     document.getElementById('adminPhotoPlaceholder').style.display='none';
   }
+  function previewAdminVideo(e){
+    const file = e.target.files[0]; if(!file) return;
+    const url = URL.createObjectURL(file);
+    const vid = document.getElementById('adminVideoPreview');
+    vid.src = url; vid.style.display='block';
+    document.getElementById('adminVideoPlaceholder').style.display='none';
+  }
 
   function editVoice(i){
     editingIndex = i;
@@ -1067,6 +1094,8 @@
     document.getElementById('adminForm').reset();
     document.getElementById('adminPhotoPreview').style.display='none';
     document.getElementById('adminPhotoPlaceholder').style.display='flex';
+    document.getElementById('adminVideoPreview').style.display='none';
+    document.getElementById('adminVideoPlaceholder').style.display='flex';
     setAdminMessageType('video');
     document.getElementById('adminFormTitle').textContent = 'Add New Voice';
     document.getElementById('adminSubmitBtn').textContent = 'Add Voice';
@@ -1094,7 +1123,16 @@
     if(adminSelectedType==='written'){
       voice.message = document.getElementById('adminMessage').value.trim();
     } else {
-      voice.video_url = document.getElementById('adminVideoUrl').value.trim();
+      const vidInput = document.getElementById('adminVideoInput');
+      if(vidInput.files && vidInput.files.length > 0){
+        const vext = vidInput.files[0].name.split('.').pop();
+        const vpath = `voices/${Date.now()}-${init.toLowerCase()}.${vext}`;
+        try{ voice.video_url = await uploadFile('fov-media', vpath, vidInput.files[0]); }
+        catch(err){ showToast('Video upload failed — please try again'); return false; }
+      } else {
+        voice.video_url = document.getElementById('adminVideoUrl').value.trim();
+        if(!voice.video_url && editingIndex!==null) voice.video_url = voicesCache[editingIndex].video_url;
+      }
     }
 
     const photoInput = document.getElementById('adminPhotoInput');
