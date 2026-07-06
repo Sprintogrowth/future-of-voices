@@ -112,7 +112,7 @@
   .empty-state-icon{font-size:1.8rem;color:var(--gold);margin-bottom:18px;}
   .empty-state p{font-family:Georgia,serif;font-style:italic;font-size:1.1rem;margin-bottom:28px;color:var(--cream);}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px;max-width:1180px;margin:0 auto;}
-  .card{aspect-ratio:2/3;border-radius:14px;position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--line);transition:transform .45s ease, box-shadow .45s ease;background:linear-gradient(150deg,var(--black3),var(--black2) 60%, #25201a);}
+  .card{aspect-ratio:4/5;border-radius:14px;position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--line);transition:transform .45s ease, box-shadow .45s ease;background:linear-gradient(150deg,var(--black3),var(--black2) 60%, #25201a);}
   .card:hover{transform:translateY(-8px);box-shadow:0 24px 50px -18px rgba(0,0,0,0.7);}
   .card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .card-init{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:3.6rem;color:rgba(201,163,94,0.16);letter-spacing:2px;transition:opacity .35s ease;}
@@ -351,9 +351,9 @@
     <button type="button" onclick="goTo('directory')">Directory</button>
     <button type="button" onclick="goTo('join')">Join</button>
     <button type="button" onclick="showToast('Coming soon: full project page')">About the Project</button>
-    <button type="button" onclick="openLegal('privacyOverlay')">Privacy Policy</button>
+    <button type="button" onclick="window.open('/privacy-policy','_blank')">Privacy Policy</button>
+    <button type="button" onclick="window.open('/image-rights-terms','_blank')">Image Rights &amp; Terms</button>
     <button type="button" onclick="openLegal('cookieOverlay')">Cookie Policy</button>
-    <button type="button" onclick="openLogin()">Admin</button>
   </div>
   <div class="footer-bottom">Future of Voices — part of the <span>Sonia Boost</span> ecosystem · Human Impact</div>
   <div class="footer-copyright">Derechos de autor ©2026 The Wonder World Group. Reservados todos los derechos.</div>
@@ -456,144 +456,17 @@
           <textarea id="writtenMessageInput" rows="4" placeholder="Write your message to the next generation..."></textarea>
         </div>
 
-        <label class="checkbox-row"><input type="checkbox" required><span>I agree to the image rights and terms of Future of Voices *</span></label>
+        <label class="checkbox-row"><input type="checkbox" id="regConsent" required><span>I have read and agree to the <a href="/image-rights-terms" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">Image Rights &amp; Terms</a> and the <a href="/privacy-policy" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">Privacy Policy</a> of Future of Voices. *</span></label>
+        <label class="checkbox-row"><input type="checkbox" id="regNewsletter"><span>Keep me updated about Future of Voices — new voices, milestones, and opportunities to amplify my message. (optional)</span></label>
         <button type="submit" class="btn-gold" style="width:100%;margin-top:18px;">Submit Application</button>
       </form>
       <div id="registerSuccess" style="display:none;text-align:center;padding:20px 0;">
         <div class="success-check">✓</div>
-        <h3>Application Received!</h3>
-        <p>Thank you for joining Future of Voices. Our team will review your profile and contact you soon.</p>
+        <h3>Your Voice Is On Its Way ✦</h3>
+        <p>Thank you for joining Future of Voices. Our curation team will review your message within 5 business days. Once approved, your voice will be published in the directory for the world to see.</p>
         <button class="btn-outline" onclick="closeRegister()">Close</button>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- LOGIN / ADMIN ACCESS MODAL -->
-<div class="modal-bg" id="loginBg">
-  <div class="modal register-modal">
-    <button class="close-btn" onclick="closeLogin()">✕</button>
-    <div class="modal-body">
-      <div class="modal-cat">Admin Access</div>
-      <h2>Log In</h2>
-
-      <div id="loginView">
-        <form id="loginForm" onsubmit="return handleLogin(event)">
-          <div class="form-row"><label>Email *</label><input type="email" id="loginEmail" required></div>
-          <div class="form-row"><label>Password *</label><input type="password" id="loginPassword" required></div>
-          <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Log In</button>
-        </form>
-        <button class="btn-outline" style="width:100%;margin-top:12px;" onclick="showForgotView()">Forgot password?</button>
-      </div>
-
-      <div id="forgotView" style="display:none;">
-        <p>This is a prototype with no email service connected, so we can't send a reset link. Confirm your admin email and we'll generate a brand-new password for you right here.</p>
-        <div class="form-row"><label>Admin Email *</label><input type="email" id="forgotEmail" required></div>
-        <button class="btn-gold" style="width:100%;" onclick="handleForgotPassword()">Generate New Password</button>
-        <button class="btn-outline" style="width:100%;margin-top:12px;" onclick="showLoginView()">Back to Log In</button>
-      </div>
-
-      <div id="setupView" style="display:none;">
-        <p>No admin account exists yet for this site. Create one now.</p>
-        <div class="form-row"><label>Admin Email *</label><input type="email" id="setupEmail" required></div>
-        <div class="form-row"><label>Password * (min. 6 characters)</label><input type="password" id="setupPassword" required minlength="6"></div>
-        <button class="btn-gold" style="width:100%;" onclick="handleSetupAdmin()">Create Admin Account</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="modal-bg" id="adminBg">
-  <div class="modal admin-modal">
-    <button class="close-btn" onclick="closeAdminPanel()">✕</button>
-    <div class="modal-body">
-      <div class="admin-bar">
-        <div>
-          <div class="modal-cat">Admin Panel</div>
-          <h2 style="margin:8px 0 0;">Submissions</h2>
-        </div>
-        <button class="btn-outline" onclick="logoutAdmin()">Log Out</button>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-bottom:20px;">
-        <button class="filter-btn active" id="tabRegs" onclick="switchTab('registrations')">Submissions</button>
-        <button class="filter-btn" id="tabVoices" onclick="switchTab('voices')">Add / Manage Voices</button>
-      </div>
-
-      <!-- REGISTRATIONS -->
-      <div id="regsPanel">
-        <div class="admin-section-title">Form Submissions</div>
-        <div id="regsList" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
-
-      <!-- VOICES: add someone manually (with their permission) or edit/delete published ones -->
-      <div id="voicesPanel" style="display:none;">
-      <div class="admin-section-title">Published Voices</div>
-      <div class="admin-list" id="adminVoicesList"></div>
-
-      <div class="admin-section-title" id="adminFormTitle">Add New Voice</div>
-      <form id="adminForm" onsubmit="return handleAdminSubmit(event)">
-        <div class="form-row"><label>Full Name *</label><input type="text" id="adminName" required></div>
-        <div class="form-row">
-          <label>Category *</label>
-          <select id="adminCategory" required>
-            <option value="">Select...</option>
-            <option value="actors">Actor</option>
-            <option value="actresses">Actress</option>
-            <option value="influencers">Influencer</option>
-            <option value="visionaries">Visionary</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>Photo (leave empty to keep current when editing)</label>
-          <div class="upload-box" id="adminPhotoBox">
-            <input type="file" id="adminPhotoInput" accept="image/*" onchange="previewAdminPhoto(event)">
-            <div class="upload-placeholder" id="adminPhotoPlaceholder">+ Upload Photo</div>
-            <img id="adminPhotoPreview" style="display:none;">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Message Type *</label>
-          <div class="type-toggle">
-            <button type="button" class="type-btn active" id="adminTypeBtnVideo" data-type="video" onclick="setAdminMessageType('video')">🎥 Video</button>
-            <button type="button" class="type-btn" id="adminTypeBtnWritten" data-type="written" onclick="setAdminMessageType('written')">✍️ Written</button>
-          </div>
-        </div>
-        <div class="form-row" id="adminVideoRow">
-          <label>Video File (upload)</label>
-          <div class="upload-box">
-            <input type="file" id="adminVideoInput" accept="video/*" onchange="previewAdminVideo(event)">
-            <div class="upload-placeholder" id="adminVideoPlaceholder">+ Upload Video</div>
-            <video id="adminVideoPreview" style="display:none;" muted controls></video>
-          </div>
-          <label style="margin-top:8px;">Or paste a Video URL</label>
-          <input type="url" id="adminVideoUrl" placeholder="https://...">
-        </div>
-        <div class="form-row" id="adminWrittenRow" style="display:none;">
-          <label>Written Message</label>
-          <textarea id="adminMessage" rows="3" placeholder="Their message to the next generation..."></textarea>
-        </div>
-        <button type="submit" class="btn-gold" id="adminSubmitBtn" style="width:100%;margin-top:8px;">Add Voice</button>
-        <button type="button" class="btn-outline" id="adminCancelEditBtn" style="width:100%;margin-top:10px;display:none;" onclick="cancelAdminEdit()">Cancel Edit</button>
-      </form>
-      </div><!-- end voicesPanel -->
-    </div>
-  </div>
-</div>
-
-<!-- PRIVACY POLICY PAGE -->
-<div class="legal-overlay" id="privacyOverlay">
-  <div class="legal-content">
-    <button class="close-btn legal-close" onclick="closeLegal('privacyOverlay')">✕</button>
-    <div class="legal-label">Legal</div>
-    <h1>Privacy Policy</h1>
-    <p>BRIANYADS US LLC, sensitive to the needs of Internet users and aware of the importance of strict privacy regarding the personal information entrusted to us, provides this privacy statement to inform you of our policy on the treatment of personal data obtained from our visitors and users.</p>
-    <p>By reading, viewing or browsing this site, you accept these conditions. If you do not accept them, you must leave the site without making any use of it or its content, and without accessing any linked pages.</p>
-    <h3>Party Responsible for Data Processing</h3>
-    <p>The owner of this site and the party responsible for data processing is <strong>BRIANYADS US LLC</strong>. You can contact us at <strong>sprintogrowth@gmail.com</strong> or by mail at 2201 Menaul Blvd NE Ste A, Albuquerque, New Mexico 87107, USA.</p>
-    <h3>Purpose of Data Processing</h3>
-    <p>On our websites there are specific sections where you can enter your data to receive information about updates to our website and some of the programs we distribute. We assure you that any information you provide will be handled in a completely confidential manner.</p>
   </div>
 </div>
 
@@ -644,6 +517,23 @@
   </div>
 </div>
 
+
+<!-- PHOTO CROP (4:5) MODAL -->
+<div class="modal-bg" id="cropBg" style="z-index:1900;">
+  <div class="modal register-modal" style="max-width:400px;">
+    <div class="modal-body" style="text-align:center;">
+      <div class="modal-cat">Your Photo</div>
+      <h2 style="font-size:1.2rem;margin:8px 0 6px;">Adjust Your Photo</h2>
+      <p style="color:var(--gray);font-size:0.8rem;margin-bottom:16px;">Adjust your photo within the vertical frame (4:5). This is how your voice will appear in the directory.</p>
+      <div id="cropStage" style="width:288px;height:360px;margin:0 auto 18px;border-radius:14px;overflow:hidden;border:1px solid var(--gold);cursor:grab;touch-action:none;background:var(--black2);">
+        <canvas id="cropCanvas" width="288" height="360"></canvas>
+      </div>
+      <button class="btn-gold" style="width:100%;" onclick="confirmCrop()">Looks Good</button>
+      <button class="btn-outline" style="width:100%;margin-top:10px;" onclick="cancelCrop()">Choose Another Photo</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -652,6 +542,7 @@
     'https://etwlatwcvajlsppybryz.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xhdHdjdmFqbHNwcHlicnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzIxMDMsImV4cCI6MjA5ODAwODEwM30.vPgRuAMOTZRngLG1M2aHySD9EmQEnXIJa3Tn6gLwT1U'
   );
+  const CONSENT_VERSION = 'v1.0-2026-07';
 
   document.body.style.overflow='hidden';
   setTimeout(()=>{ document.getElementById('curtain').style.display='none'; document.getElementById('curtainLogo').style.display='none'; document.body.style.overflow=''; }, 2100);
@@ -664,8 +555,6 @@
 
   let voicesCache = [];
   let currentVoice = null;
-  let editingIndex = null;
-  let adminSelectedType = 'video';
   let selectedType = 'video';
 
   function goTo(id){
@@ -683,26 +572,27 @@
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
     clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+    window._toastTimer = setTimeout(()=> t.classList.remove('show'), 3800);
   }
+
+  /* ---------- HELPERS ---------- */
+  function voiceType(v){ return v.video_url ? 'video' : 'written'; }
+  function voiceInit(name){ return (name||'').split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?'; }
 
   /* ---------- STORAGE (Supabase) ---------- */
   async function loadVoices(){
-    const { data } = await _sb.from('fov_voices').select('*').order('created_at', { ascending: false });
+    const { data, error } = await _sb.from('public_voices').select('*').order('published_at', { ascending: false });
     voicesCache = data || [];
     renderGrid();
   }
 
-  async function uploadFile(bucket, path, file){
-    const { data, error } = await _sb.storage.from(bucket).upload(path, file, { upsert: true });
+  async function uploadFile(bucket, path, blobOrFile, contentType){
+    const opts = { upsert: false };
+    if(contentType) opts.contentType = contentType;
+    const { error } = await _sb.storage.from(bucket).upload(path, blobOrFile, opts);
     if(error) throw error;
     const { data: { publicUrl } } = _sb.storage.from(bucket).getPublicUrl(path);
     return publicUrl;
-  }
-
-  async function loadAdmin(){
-    const { data: { session } } = await _sb.auth.getSession();
-    return session ? { email: session.user.email } : null;
   }
 
   /* ---------- DIRECTORY GRID ---------- */
@@ -722,14 +612,15 @@
 
     voicesCache.forEach((v,i)=>{
       const card = document.createElement('div');
-      card.className = 'card'; card.dataset.cat = v.cat;
-      const thumb = v.photo_url ? `<img class="card-photo" src="${v.photo_url}">` : `<div class="card-init">${v.init||'?'}</div>`;
+      card.className = 'card'; card.dataset.cat = v.category;
+      const type = voiceType(v);
+      const thumb = v.photo_url ? `<img class="card-photo" src="${v.photo_url}" loading="lazy">` : `<div class="card-init">${voiceInit(v.full_name)}</div>`;
       card.innerHTML = `
         ${thumb}
-        <div class="play-icon">${ICONS[v.type]}</div>
+        <div class="play-icon">${ICONS[type]}</div>
         <div class="card-overlay">
-          <div class="card-name">${v.name}</div>
-          <span class="card-cat">${v.label} · ${v.type==='video' ? 'Video' : 'Written'}</span>
+          <div class="card-name">${v.full_name}</div>
+          <span class="card-cat">${LABELS[v.category]||v.category} · ${type==='video' ? 'Video' : 'Written'}</span>
         </div>`;
       card.addEventListener('click', ()=> openModal(i));
       grid.appendChild(card);
@@ -750,6 +641,7 @@
   function openModal(i){
     const v = voicesCache[i];
     currentVoice = v;
+    const type = voiceType(v);
     const poster = document.getElementById('modalPoster');
     const existingImg = poster.querySelector('img');
     if(existingImg) existingImg.remove();
@@ -760,25 +652,26 @@
       document.getElementById('modalInit').style.display='none';
     } else {
       document.getElementById('modalInit').style.display='block';
-      document.getElementById('modalInit').textContent = v.init || '?';
+      document.getElementById('modalInit').textContent = voiceInit(v.full_name);
     }
-    document.getElementById('modalCat').textContent = v.label;
-    document.getElementById('modalName').textContent = v.name;
+    document.getElementById('modalCat').textContent = LABELS[v.category]||v.category;
+    document.getElementById('modalName').textContent = v.full_name;
 
-    if(v.type==='video'){
-      document.getElementById('modalBio').textContent = `A video message from ${v.name} to inspire the next generation to dream without limits.`;
+    if(type==='video'){
+      document.getElementById('modalBio').textContent = `A video message from ${v.full_name} to inspire the next generation to dream without limits.`;
       document.getElementById('videoBar').style.display='block';
       document.getElementById('modalVideo').src = v.video_url || '';
       document.getElementById('writtenBlock').style.display='none';
     } else {
-      document.getElementById('modalBio').textContent = `A written message from ${v.name} to inspire the next generation to dream without limits.`;
+      document.getElementById('modalBio').textContent = `A written message from ${v.full_name} to inspire the next generation to dream without limits.`;
       document.getElementById('videoBar').style.display='none';
       document.getElementById('writtenBlock').style.display='block';
-      document.getElementById('writtenText').textContent = v.message || '';
+      document.getElementById('writtenText').textContent = v.written_message || '';
     }
 
-    const slug = v.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+    const slug = v.full_name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-');
     document.getElementById('modalLink').textContent = `soniaboost.com/future-of-voices/voices/${slug}`;
+    document.getElementById('modalDate').textContent = v.published_at ? new Date(v.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
     document.getElementById('modalExtra').classList.remove('open');
     document.getElementById('shareMenu').classList.remove('open');
     modalBg.classList.add('open');
@@ -790,15 +683,12 @@
     if(mv){ mv.pause(); mv.removeAttribute('src'); mv.load(); }
   }
   modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
-  function openCurrentVideoUrl(){
-    if(currentVoice && currentVoice.video_url) window.open(currentVoice.video_url, '_blank', 'noopener,noreferrer');
-  }
 
   function toggleFullProfile(){ document.getElementById('modalExtra').classList.toggle('open'); }
   function getShareData(){
-    const slug = currentVoice.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+    const slug = currentVoice.full_name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-');
     const url = `https://soniaboost.com/future-of-voices/voices/${slug}`;
-    const text = `${currentVoice.name}'s message to the next generation — Future of Voices`;
+    const text = `${currentVoice.full_name}'s message to the next generation — Future of Voices`;
     return {url, text};
   }
   function toggleShareMenu(){ document.getElementById('shareMenu').classList.toggle('open'); }
@@ -825,6 +715,117 @@
     else { showToast(url); }
   }
 
+  /* ---------- T3: PHOTO 4:5 CROP (1080x1350) WITH REPOSITION ---------- */
+  const CROP_W = 1080, CROP_H = 1350;
+  let cropImg = null;         // HTMLImageElement of the selected photo
+  let cropOffset = {x:0, y:0}; // pan offset in preview px
+  let cropScale = 1;           // image scale so it covers the frame
+  let croppedBlob = null;      // final 1080x1350 JPEG blob
+
+  function validatePhotoFile(file){
+    const okTypes = ['image/jpeg','image/png','image/webp'];
+    if(!okTypes.includes(file.type)){
+      showToast('Unsupported format. Please upload a JPG, PNG or WebP image.');
+      return false;
+    }
+    if(file.size > 5 * 1024 * 1024){
+      showToast('Please upload a photo up to 5 MB.');
+      return false;
+    }
+    return true;
+  }
+
+  function previewPhoto(e){
+    const file = e.target.files[0]; if(!file) return;
+    if(!validatePhotoFile(file)){ e.target.value=''; return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      const shortSide = Math.min(img.naturalWidth, img.naturalHeight);
+      if(shortSide < 540){
+        showToast('This image is too small to display well. Please upload a larger photo.');
+        e.target.value='';
+        return;
+      }
+      cropImg = img;
+      openCropper();
+    };
+    img.src = url;
+  }
+
+  function openCropper(){
+    const bg = document.getElementById('cropBg');
+    const stage = document.getElementById('cropStage');
+    const canvas = document.getElementById('cropCanvas');
+    // preview frame: 288x360 (4:5)
+    const fw = 288, fh = 360;
+    canvas.width = fw; canvas.height = fh;
+    // cover-fit scale
+    cropScale = Math.max(fw / cropImg.naturalWidth, fh / cropImg.naturalHeight);
+    cropOffset = {
+      x: (fw - cropImg.naturalWidth * cropScale) / 2,
+      y: (fh - cropImg.naturalHeight * cropScale) / 2
+    };
+    drawCrop();
+    bg.classList.add('open');
+    document.body.style.overflow='hidden';
+
+    // drag to reposition
+    let dragging = false, last = null;
+    stage.onpointerdown = ev => { dragging = true; last = {x:ev.clientX, y:ev.clientY}; stage.setPointerCapture(ev.pointerId); };
+    stage.onpointermove = ev => {
+      if(!dragging) return;
+      const fw2 = canvas.width, fh2 = canvas.height;
+      cropOffset.x += ev.clientX - last.x;
+      cropOffset.y += ev.clientY - last.y;
+      last = {x:ev.clientX, y:ev.clientY};
+      // clamp so the image always covers the frame
+      cropOffset.x = Math.min(0, Math.max(fw2 - cropImg.naturalWidth * cropScale, cropOffset.x));
+      cropOffset.y = Math.min(0, Math.max(fh2 - cropImg.naturalHeight * cropScale, cropOffset.y));
+      drawCrop();
+    };
+    stage.onpointerup = ()=> dragging = false;
+  }
+
+  function drawCrop(){
+    const canvas = document.getElementById('cropCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(cropImg, cropOffset.x, cropOffset.y, cropImg.naturalWidth * cropScale, cropImg.naturalHeight * cropScale);
+  }
+
+  function confirmCrop(){
+    // Export at full 1080x1350 using the same offsets scaled up
+    const preview = document.getElementById('cropCanvas');
+    const ratio = CROP_W / preview.width;
+    const out = document.createElement('canvas');
+    out.width = CROP_W; out.height = CROP_H;
+    const ctx = out.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(cropImg,
+      cropOffset.x * ratio, cropOffset.y * ratio,
+      cropImg.naturalWidth * cropScale * ratio,
+      cropImg.naturalHeight * cropScale * ratio);
+    out.toBlob(blob=>{
+      croppedBlob = blob;
+      const img = document.getElementById('photoPreview');
+      img.src = URL.createObjectURL(blob);
+      img.style.display='block';
+      document.getElementById('photoPlaceholder').style.display='none';
+      closeCropper();
+    }, 'image/jpeg', 0.8);
+  }
+
+  function closeCropper(){
+    document.getElementById('cropBg').classList.remove('open');
+    document.body.style.overflow='hidden'; // register modal still open
+  }
+  function cancelCrop(){
+    croppedBlob = null;
+    document.getElementById('photoInput').value='';
+    closeCropper();
+  }
+
   /* ---------- REGISTER FORM ---------- */
   function setMessageType(type){
     selectedType = type;
@@ -846,23 +847,34 @@
     document.getElementById('photoPlaceholder').style.display='flex';
     document.getElementById('videoPreview').style.display='none';
     document.getElementById('videoPlaceholder').style.display='flex';
+    croppedBlob = null; cropImg = null;
     setMessageType('video');
   }
   registerBg.addEventListener('click', e=>{ if(e.target===registerBg) closeRegister(); });
-  function previewPhoto(e){
-    const file = e.target.files[0]; if(!file) return;
-    const url = URL.createObjectURL(file);
-    const img = document.getElementById('photoPreview');
-    img.src = url; img.style.display='block';
-    document.getElementById('photoPlaceholder').style.display='none';
+
+  function validateVideoFile(file){
+    const okTypes = ['video/mp4','video/quicktime','video/webm'];
+    const okExt = /\.(mp4|mov|webm)$/i.test(file.name);
+    if(!okTypes.includes(file.type) && !okExt){
+      showToast('Please upload a video up to 30 seconds and 100 MB (MP4, MOV or WebM).');
+      return false;
+    }
+    if(file.size > 100 * 1024 * 1024){
+      showToast('Please upload a video up to 30 seconds and 100 MB (MP4, MOV or WebM).');
+      return false;
+    }
+    return true;
   }
+
   function previewVideo(e){
     const file = e.target.files[0]; if(!file) return;
+    if(!validateVideoFile(file)){ e.target.value=''; return; }
     const url = URL.createObjectURL(file);
     const vid = document.getElementById('videoPreview');
     vid.src = url; vid.style.display='block';
     document.getElementById('videoPlaceholder').style.display='none';
   }
+
   let _submitting = false;
   async function submitRegister(e){
     e.preventDefault();
@@ -871,304 +883,71 @@
     const submitBtn = e.target.querySelector('button[type=submit]');
     if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
     try{
-    const name  = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const cat   = document.getElementById('regCat').value;
-    const social= document.getElementById('regSocial').value.trim();
-    const bio   = document.getElementById('regBio').value.trim();
+      const name  = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const cat   = document.getElementById('regCat').value;
+      const social= document.getElementById('regSocial').value.trim();
+      const bio   = document.getElementById('regBio').value.trim();
 
-    const reg = { name, email, cat, social_handle: social, bio, type: selectedType };
-
-    const photo = document.getElementById('photoInput');
-    if(photo.files && photo.files.length > 0){
-      const pext = photo.files[0].name.split('.').pop();
-      const ppath = `registrations/photos/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${pext}`;
-      try{ reg.photo_url = await uploadFile('fov-media', ppath, photo.files[0]); }
-      catch(err){ showToast('Photo upload failed — please try again'); return false; }
-    }
-
-    if(selectedType==='video'){
-      const vid = document.getElementById('videoInput');
-      if(vid.files && vid.files.length > 0){
-        const ext = vid.files[0].name.split('.').pop();
-        const path = `registrations/${Date.now()}-${name.replace(/\s+/g,'-').toLowerCase()}.${ext}`;
-        try{ reg.video_url = await uploadFile('fov-media', path, vid.files[0]); }
-        catch(err){ showToast('Video upload failed — please try again'); return false; }
+      if(!document.getElementById('regConsent').checked){
+        showToast('Please accept the Image Rights & Terms and Privacy Policy to continue.');
+        return false;
       }
-    } else {
-      const msg = document.getElementById('writtenMessageInput').value.trim();
-      if(!msg){ showToast('Please write your message'); return false; }
-      reg.message = msg;
-    }
 
-    const { error } = await _sb.from('fov_registrations').insert(reg);
-    if(error){ console.error(error); showToast('Submission failed — please try again'); return false; }
+      const reg = {
+        full_name: name,
+        email,
+        category: cat,
+        social_handle: social || null,
+        bio: bio || null,
+        consent_accepted: true,
+        consent_accepted_at: new Date().toISOString(),
+        consent_terms_version: CONSENT_VERSION,
+        newsletter_opt_in: document.getElementById('regNewsletter').checked
+      };
 
-    document.getElementById('registerForm').style.display='none';
-    setTimeout(()=>{ document.getElementById('registerSuccess').style.display='block'; }, 700);
-    return false;
+      const stamp = Date.now();
+      const slugName = name.replace(/\s+/g,'-').toLowerCase().normalize('NFD').replace(/[^a-z0-9-]/g,'');
+
+      // photo: use the 4:5 cropped blob
+      if(croppedBlob){
+        try{ reg.photo_url = await uploadFile('photos', `${stamp}-${slugName}.jpg`, croppedBlob, 'image/jpeg'); }
+        catch(err){ console.error(err); showToast('Photo upload failed — please try again'); return false; }
+      } else {
+        showToast('Please upload your photo');
+        return false;
+      }
+
+      if(selectedType==='video'){
+        const vid = document.getElementById('videoInput');
+        if(!vid.files || vid.files.length===0){ showToast('Please upload your 30-second video'); return false; }
+        if(!validateVideoFile(vid.files[0])) return false;
+        const ext = vid.files[0].name.split('.').pop().toLowerCase();
+        try{ reg.video_url = await uploadFile('videos', `${stamp}-${slugName}.${ext}`, vid.files[0]); }
+        catch(err){ console.error(err); showToast('Video upload failed — please try again'); return false; }
+      } else {
+        const msg = document.getElementById('writtenMessageInput').value.trim();
+        if(!msg){ showToast('Please write your message'); return false; }
+        reg.written_message = msg;
+      }
+
+      const { error } = await _sb.from('submissions').insert(reg);
+      if(error){ console.error(error); showToast('Submission failed — please try again'); return false; }
+
+      document.getElementById('registerForm').style.display='none';
+      setTimeout(()=>{ document.getElementById('registerSuccess').style.display='block'; }, 700);
+      return false;
     } finally {
       _submitting = false;
       if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
     }
   }
 
-  /* ---------- LOGIN / FORGOT PASSWORD ---------- */
-  const loginBg = document.getElementById('loginBg');
-  async function openLogin(){
-    document.getElementById('forgotView').style.display='none';
-    document.getElementById('setupView').style.display='none';
-    document.getElementById('loginView').style.display='block';
-    loginBg.classList.add('open');
-    document.body.style.overflow='hidden';
-  }
-  function closeLogin(){ loginBg.classList.remove('open'); document.body.style.overflow=''; }
-  loginBg.addEventListener('click', e=>{ if(e.target===loginBg) closeLogin(); });
-  function showLoginView(){
-    document.getElementById('loginView').style.display='block';
-    document.getElementById('forgotView').style.display='none';
-  }
-  function showForgotView(){
-    document.getElementById('loginView').style.display='none';
-    document.getElementById('forgotView').style.display='block';
-  }
-  const ADMIN_EMAIL = 'soniaboost.ai@gmail.com';
-  const ADMIN_PASS  = 'futurecannes!!!@@-';
-
-  function handleSetupAdmin(){ showToast('Contact your administrator to set up access'); }
-  function handleLogin(e){
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const pass  = document.getElementById('loginPassword').value;
-    if(email === ADMIN_EMAIL && pass === ADMIN_PASS){
-      closeLogin();
-      showToast('Welcome back');
-      enterAdminMode();
-    } else {
-      showToast('Incorrect email or password');
-    }
-    return false;
-  }
-  function handleForgotPassword(){ showToast('Contact your administrator to reset your password'); }
-  function logoutAdmin(){ closeAdminPanel(); showToast('Logged out'); }
-
-  /* ---------- ADMIN PANEL ---------- */
-  const adminBg = document.getElementById('adminBg');
-
-
-  let regsCache = [];
-  async function loadRegistrations(){
-    const container = document.getElementById('regsList');
-    container.innerHTML = '<div class="admin-empty">Loading...</div>';
-    const { data, error } = await _sb.from('fov_registrations').select('*').order('created_at', { ascending: false });
-    if(error || !data || data.length===0){
-      container.innerHTML = '<div class="admin-empty">No submissions yet.</div>';
-      return;
-    }
-    regsCache = data;
-    container.innerHTML = data.map(r => `
-      <div style="background:var(--black3);border:1px solid var(--line);border-radius:10px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="display:flex;align-items:center;gap:10px;">
-            ${r.photo_url ? `<img src="${r.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--line);">` : ''}
-            <span style="font-weight:600;color:var(--cream);">${r.name}</span>
-          </span>
-          <span style="font-size:0.68rem;color:var(--gray);">${new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-        </div>
-        ${r.photo_url ? `<div style="margin:8px 0;"><img src="${r.photo_url}" style="max-width:160px;border-radius:8px;border:1px solid var(--line);"></div>` : ''}
-        <div style="font-size:0.75rem;color:var(--gray);line-height:1.8;">
-          <span style="color:var(--gold);">Email:</span> ${r.email || '—'} &nbsp;·&nbsp;
-          <span style="color:var(--gold);">Category:</span> ${r.cat || '—'} &nbsp;·&nbsp;
-          <span style="color:var(--gold);">Type:</span> ${r.type || '—'}
-        </div>
-        ${r.social_handle ? `<div style="font-size:0.75rem;color:var(--gray);margin-top:4px;"><span style="color:var(--gold);">Social:</span> ${r.social_handle}</div>` : ''}
-        ${r.bio ? `<div style="font-size:0.75rem;color:var(--gray);margin-top:4px;"><span style="color:var(--gold);">Bio:</span> ${r.bio}</div>` : ''}
-        ${r.message ? `<div style="font-size:0.75rem;color:var(--cream);margin-top:8px;padding:10px;background:var(--black2);border-radius:6px;">${r.message}</div>` : ''}
-        ${r.video_url ? `<div style="margin-top:10px;"><video src="${r.video_url}" controls preload="metadata" style="width:100%;max-height:320px;border-radius:8px;background:var(--black2);border:1px solid var(--line);"></video></div>` : ''}
-        <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
-          ${r.published
-            ? `<span style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">✓ Published to directory</span>`
-            : `<button class="btn-gold" style="padding:10px 22px;font-size:0.7rem;" onclick="publishSubmission('${r.id}')">Publish to Directory</button>`}
-        </div>
-      </div>`).join('');
-  }
-
-  async function publishSubmission(id){
-    const r = regsCache.find(x => x.id === id);
-    if(!r){ showToast('Submission not found'); return; }
-    const init = r.name.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const voice = {
-      name: r.name,
-      cat: r.cat,
-      label: LABELS[r.cat] || r.cat,
-      init,
-      type: r.type,
-      video_url: r.video_url || null,
-      message: r.message || null,
-      photo_url: r.photo_url || null
-    };
-    const { data, error } = await _sb.from('fov_voices').insert(voice).select().single();
-    if(error){ console.error(error); showToast('Publish failed — please try again'); return; }
-    await _sb.from('fov_registrations').update({ published: true }).eq('id', id);
-    voicesCache.unshift(data);
-    renderGrid();
-    renderAdminList();
-    loadRegistrations();
-    showToast(`${r.name} is now live in the directory`);
-  }
-
-  function switchTab(tab){
-    document.getElementById('tabRegs').classList.toggle('active', tab==='registrations');
-    document.getElementById('tabVoices').classList.toggle('active', tab==='voices');
-    document.getElementById('regsPanel').style.display = tab==='registrations' ? 'block' : 'none';
-    document.getElementById('voicesPanel').style.display = tab==='voices' ? 'block' : 'none';
-    if(tab==='registrations') loadRegistrations();
-    else { cancelAdminEdit(); renderAdminList(); }
-  }
-
-  function enterAdminMode(){
-    switchTab('registrations');
-    adminBg.classList.add('open');
-    document.body.style.overflow='hidden';
-  }
-  function closeAdminPanel(){ adminBg.classList.remove('open'); document.body.style.overflow=''; }
-  adminBg.addEventListener('click', e=>{ if(e.target===adminBg) closeAdminPanel(); });
-
-  function renderAdminList(){
-    const container = document.getElementById('adminVoicesList');
-    if(voicesCache.length===0){
-      container.innerHTML = '<div class="admin-empty">No voices yet — add the first one below.</div>';
-      return;
-    }
-    container.innerHTML = voicesCache.map((v,i)=>`
-      <div class="admin-row">
-        <span class="admin-row-name">${v.name} <span class="admin-row-tag">${v.label} · ${v.type}</span></span>
-        <span class="admin-row-actions">
-          <button type="button" onclick="editVoice(${i})">Edit</button>
-          <button type="button" onclick="deleteVoice(${i})">Delete</button>
-        </span>
-      </div>`).join('');
-  }
-
-  function setAdminMessageType(type){
-    adminSelectedType = type;
-    document.getElementById('adminTypeBtnVideo').classList.toggle('active', type==='video');
-    document.getElementById('adminTypeBtnWritten').classList.toggle('active', type==='written');
-    document.getElementById('adminVideoRow').style.display = type==='video' ? 'flex' : 'none';
-    document.getElementById('adminVideoRow').style.flexDirection='column';
-    document.getElementById('adminWrittenRow').style.display = type==='written' ? 'flex' : 'none';
-    document.getElementById('adminWrittenRow').style.flexDirection='column';
-  }
-
-  function previewAdminPhoto(e){
-    const file = e.target.files[0]; if(!file) return;
-    const url = URL.createObjectURL(file);
-    const img = document.getElementById('adminPhotoPreview');
-    img.src = url; img.style.display='block';
-    document.getElementById('adminPhotoPlaceholder').style.display='none';
-  }
-  function previewAdminVideo(e){
-    const file = e.target.files[0]; if(!file) return;
-    const url = URL.createObjectURL(file);
-    const vid = document.getElementById('adminVideoPreview');
-    vid.src = url; vid.style.display='block';
-    document.getElementById('adminVideoPlaceholder').style.display='none';
-  }
-
-  function editVoice(i){
-    editingIndex = i;
-    const v = voicesCache[i];
-    document.getElementById('adminName').value = v.name;
-    document.getElementById('adminCategory').value = v.cat;
-    setAdminMessageType(v.type);
-    if(v.type==='written'){ document.getElementById('adminMessage').value = v.message || ''; }
-    else { document.getElementById('adminVideoUrl').value = v.video_url || ''; }
-    document.getElementById('adminFormTitle').textContent = 'Edit Voice';
-    document.getElementById('adminSubmitBtn').textContent = 'Save Changes';
-    document.getElementById('adminCancelEditBtn').style.display='block';
-    document.getElementById('adminForm').scrollIntoView({behavior:'smooth'});
-  }
-
-  function cancelAdminEdit(){
-    editingIndex = null;
-    document.getElementById('adminForm').reset();
-    document.getElementById('adminPhotoPreview').style.display='none';
-    document.getElementById('adminPhotoPlaceholder').style.display='flex';
-    document.getElementById('adminVideoPreview').style.display='none';
-    document.getElementById('adminVideoPlaceholder').style.display='flex';
-    setAdminMessageType('video');
-    document.getElementById('adminFormTitle').textContent = 'Add New Voice';
-    document.getElementById('adminSubmitBtn').textContent = 'Add Voice';
-    document.getElementById('adminCancelEditBtn').style.display='none';
-  }
-
-  async function deleteVoice(i){
-    const voice = voicesCache[i];
-    const { error } = await _sb.from('fov_voices').delete().eq('id', voice.id);
-    if(error){ showToast('Delete failed — please try again'); return; }
-    voicesCache.splice(i,1);
-    renderAdminList();
-    renderGrid();
-    showToast('Voice deleted');
-  }
-
-  async function handleAdminSubmit(e){
-    e.preventDefault();
-    const name = document.getElementById('adminName').value.trim();
-    const cat = document.getElementById('adminCategory').value;
-    if(!name || !cat){ showToast('Name and category are required'); return false; }
-    const init = name.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const voice = { name, cat, label: LABELS[cat], init, type: adminSelectedType };
-
-    if(adminSelectedType==='written'){
-      voice.message = document.getElementById('adminMessage').value.trim();
-    } else {
-      const vidInput = document.getElementById('adminVideoInput');
-      if(vidInput.files && vidInput.files.length > 0){
-        const vext = vidInput.files[0].name.split('.').pop();
-        const vpath = `voices/${Date.now()}-${init.toLowerCase()}.${vext}`;
-        try{ voice.video_url = await uploadFile('fov-media', vpath, vidInput.files[0]); }
-        catch(err){ showToast('Video upload failed — please try again'); return false; }
-      } else {
-        voice.video_url = document.getElementById('adminVideoUrl').value.trim();
-        if(!voice.video_url && editingIndex!==null) voice.video_url = voicesCache[editingIndex].video_url;
-      }
-    }
-
-    const photoInput = document.getElementById('adminPhotoInput');
-    if(photoInput.files[0]){
-      const ext = photoInput.files[0].name.split('.').pop();
-      const path = `photos/${Date.now()}-${init.toLowerCase()}.${ext}`;
-      try{ voice.photo_url = await uploadFile('fov-media', path, photoInput.files[0]); }
-      catch(err){ showToast('Photo upload failed'); return false; }
-    } else if(editingIndex!==null){
-      voice.photo_url = voicesCache[editingIndex].photo_url;
-    }
-
-    let error;
-    if(editingIndex!==null){
-      const id = voicesCache[editingIndex].id;
-      ({ error } = await _sb.from('fov_voices').update(voice).eq('id', id));
-      if(!error) voicesCache[editingIndex] = { ...voice, id };
-    } else {
-      const { data, error: insertErr } = await _sb.from('fov_voices').insert(voice).select().single();
-      error = insertErr;
-      if(!error) voicesCache.unshift(data);
-    }
-
-    if(error){ showToast('Save failed — please try again'); return false; }
-    cancelAdminEdit();
-    renderAdminList();
-    renderGrid();
-    showToast('Saved');
-    return false;
-  }
-
   /* ---------- GLOBAL ---------- */
   document.addEventListener('keydown', e=>{
     if(e.key==='Escape'){
-      closeModal(); closeRegister(); closeLogin(); closeAdminPanel();
-      closeLegal('privacyOverlay'); closeLegal('cookieOverlay');
+      closeModal(); closeRegister();
+      closeLegal('cookieOverlay');
       document.getElementById('mobileMenu').classList.remove('open');
     }
   });
@@ -1181,6 +960,7 @@
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
   loadVoices();
+
 </script>
 
 </body>

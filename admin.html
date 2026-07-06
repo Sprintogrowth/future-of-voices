@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin — Future of Voices</title>
+<style>
+  :root{
+    --black:#000000; --black2:#121110; --black3:#1b1916;
+    --gold:#c9a35e; --gold-bright:#e8c98a; --cream:#f3ede0; --gray:#a39c8f;
+    --line:rgba(201,163,94,0.22);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--black);color:var(--cream);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;min-height:100vh;}
+  ::selection{background:var(--gold);color:var(--black);}
+  h1,h2,h3{font-family:Georgia,'Times New Roman',serif;font-weight:400;}
+  button{font-family:inherit;cursor:pointer;}
+  a{color:var(--gold);}
+
+  .btn-gold{background:var(--gold);color:var(--black);padding:12px 26px;border-radius:30px;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;border:none;transition:transform .2s ease;}
+  .btn-gold:hover{transform:translateY(-1px);}
+  .btn-outline{border:1px solid var(--line);color:var(--cream);background:transparent;padding:12px 26px;border-radius:30px;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;transition:all .2s ease;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold-bright);}
+  .btn-sm{padding:8px 16px;font-size:0.68rem;}
+  .btn-danger{border:1px solid rgba(220,80,80,0.5);color:#e08080;background:transparent;padding:8px 16px;border-radius:30px;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;}
+  .btn-danger:hover{background:rgba(220,80,80,0.12);}
+
+  /* LOGIN */
+  #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+  .login-card{width:100%;max-width:400px;background:var(--black2);border:1px solid var(--line);border-radius:16px;padding:40px 34px;}
+  .login-card .cat{font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+  .login-card h1{font-size:1.5rem;margin-bottom:26px;}
+  .form-row{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+  .form-row label{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);}
+  .form-row input,.form-row select,.form-row textarea{background:var(--black3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--cream);font-family:inherit;font-size:0.9rem;outline:none;transition:border-color .3s ease;width:100%;}
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold);}
+  .form-row select option{background:var(--black2);}
+
+  /* PANEL */
+  #panel{display:none;max-width:1060px;margin:0 auto;padding:40px 4vw 80px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:14px;}
+  .panel-head .cat{font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+  .panel-head h1{font-size:1.6rem;margin-top:6px;}
+  .tabs{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .tab-btn{padding:10px 22px;border-radius:30px;border:1px solid var(--line);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);background:transparent;transition:all .3s ease;}
+  .tab-btn.active{background:var(--gold);color:var(--black);border-color:var(--gold);}
+  .filters-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+  .fbtn{padding:7px 16px;border-radius:20px;border:1px solid var(--line);font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);background:transparent;}
+  .fbtn.active{border-color:var(--gold);color:var(--gold-bright);}
+
+  .sub-card{background:var(--black2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;}
+  .sub-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .sub-name{display:flex;align-items:center;gap:12px;font-weight:600;}
+  .sub-name img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--line);}
+  .badge{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid;}
+  .badge.pending{color:#e8c98a;border-color:rgba(232,201,138,0.5);}
+  .badge.approved{color:#8ecf9d;border-color:rgba(142,207,157,0.5);}
+  .badge.published{color:var(--gold);border-color:var(--gold);background:rgba(201,163,94,0.12);}
+  .badge.rejected{color:#e08080;border-color:rgba(224,128,128,0.5);}
+  .sub-meta{font-size:0.75rem;color:var(--gray);line-height:1.9;margin-top:10px;}
+  .sub-meta b{color:var(--gold);font-weight:600;}
+  .sub-body{margin-top:10px;}
+  .sub-msg{font-size:0.8rem;color:var(--cream);padding:12px;background:var(--black3);border-radius:8px;margin-top:8px;}
+  .sub-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .sub-photo-lg{max-width:150px;border-radius:10px;border:1px solid var(--line);margin-top:10px;display:block;}
+  video.sub-video{width:100%;max-height:320px;border-radius:10px;background:var(--black3);border:1px solid var(--line);margin-top:10px;}
+  .consent-line{font-size:0.68rem;color:var(--gray);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .consent-line b{color:#8ecf9d;}
+  .empty{color:var(--gray);text-align:center;padding:50px 0;font-size:0.85rem;}
+
+  .upload-box{position:relative;border:1px dashed var(--line);border-radius:10px;min-height:90px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--black3);}
+  .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;}
+  .upload-placeholder{color:var(--gray);font-size:0.8rem;}
+  .upload-box img,.upload-box video{width:100%;max-height:220px;object-fit:contain;}
+  .type-toggle{display:flex;gap:8px;}
+  .type-btn{flex:1;padding:11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--gray);font-size:0.78rem;}
+  .type-btn.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,163,94,0.08);}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gold);color:var(--black);padding:13px 26px;border-radius:30px;font-size:0.82rem;font-weight:600;opacity:0;transition:all .4s ease;z-index:3000;max-width:90vw;text-align:center;}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="cat">Future of Voices</div>
+    <h1>Admin Access</h1>
+    <form onsubmit="return doLogin(event)">
+      <div class="form-row"><label>Email</label><input type="email" id="loginEmail" required autocomplete="username"></div>
+      <div class="form-row"><label>Password</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
+      <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="panel">
+  <div class="panel-head">
+    <div>
+      <div class="cat">Admin Panel</div>
+      <h1>Future of Voices</h1>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-outline btn-sm" onclick="exportCSV()">Export CSV</button>
+      <button class="btn-outline btn-sm" onclick="doLogout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSubs" onclick="showTab('subs')">Submissions</button>
+    <button class="tab-btn" id="tabAdd" onclick="showTab('add')">Add Voice Manually</button>
+  </div>
+
+  <!-- SUBMISSIONS TAB -->
+  <div id="subsPanel">
+    <div class="filters-row">
+      <button class="fbtn active" data-f="all" onclick="setFilter('all',this)">All</button>
+      <button class="fbtn" data-f="pending" onclick="setFilter('pending',this)">Pending</button>
+      <button class="fbtn" data-f="approved" onclick="setFilter('approved',this)">Approved</button>
+      <button class="fbtn" data-f="published" onclick="setFilter('published',this)">Published</button>
+      <button class="fbtn" data-f="rejected" onclick="setFilter('rejected',this)">Rejected</button>
+    </div>
+    <div id="subsList"><div class="empty">Loading…</div></div>
+  </div>
+
+  <!-- ADD VOICE TAB -->
+  <div id="addPanel" style="display:none;">
+    <form id="addForm" onsubmit="return handleAddVoice(event)" style="max-width:560px;">
+      <div class="form-row"><label>Full Name *</label><input type="text" id="avName" required></div>
+      <div class="form-row">
+        <label>Category *</label>
+        <select id="avCat" required>
+          <option value="">Select...</option>
+          <option value="actors">Actor</option>
+          <option value="actresses">Actress</option>
+          <option value="influencers">Influencer</option>
+          <option value="visionaries">Visionary</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Email (internal record, never published)</label><input type="email" id="avEmail"></div>
+      <div class="form-row"><label>Social Handle</label><input type="text" id="avSocial" placeholder="@username"></div>
+      <div class="form-row">
+        <label>Photo</label>
+        <div class="upload-box">
+          <input type="file" id="avPhoto" accept="image/*" onchange="previewAv(event,'avPhotoPrev','avPhotoPh')">
+          <div class="upload-placeholder" id="avPhotoPh">+ Upload Photo</div>
+          <img id="avPhotoPrev" style="display:none;">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Message Type *</label>
+        <div class="type-toggle">
+          <button type="button" class="type-btn active" id="avTypeVideo" onclick="setAvType('video')">🎥 Video</button>
+          <button type="button" class="type-btn" id="avTypeWritten" onclick="setAvType('written')">✍️ Written</button>
+        </div>
+      </div>
+      <div class="form-row" id="avVideoRow">
+        <label>Video File</label>
+        <div class="upload-box">
+          <input type="file" id="avVideo" accept="video/*" onchange="previewAv(event,'avVideoPrev','avVideoPh')">
+          <div class="upload-placeholder" id="avVideoPh">+ Upload Video</div>
+          <video id="avVideoPrev" style="display:none;" muted controls></video>
+        </div>
+        <label style="margin-top:8px;">Or paste a Video URL</label>
+        <input type="url" id="avVideoUrl" placeholder="https://...">
+      </div>
+      <div class="form-row" id="avWrittenRow" style="display:none;">
+        <label>Written Message</label>
+        <textarea id="avMessage" rows="3" placeholder="Their message to the next generation..."></textarea>
+      </div>
+      <div class="form-row">
+        <label>Publish immediately?</label>
+        <select id="avStatus">
+          <option value="published">Yes — publish now</option>
+          <option value="approved">No — save as approved</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-gold" style="width:100%;margin-top:8px;" id="avSubmit">Add Voice</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SB_URL = 'https://etwlatwcvajlsppybryz.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xhdHdjdmFqbHNwcHlicnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzIxMDMsImV4cCI6MjA5ODAwODEwM30.vPgRuAMOTZRngLG1M2aHySD9EmQEnXIJa3Tn6gLwT1U';
+  const _sb = supabase.createClient(SB_URL, SB_ANON);
+  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary'};
+
+  let subs = [];
+  let filter = 'all';
+  let avType = 'video';
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(window._tt);
+    window._tt = setTimeout(()=> t.classList.remove('show'), 3600);
+  }
+
+  /* ---------- AUTH ---------- */
+  async function checkSession(){
+    const { data: { session } } = await _sb.auth.getSession();
+    if(session){ enterPanel(); }
+  }
+  async function doLogin(e){
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const { error } = await _sb.auth.signInWithPassword({ email, password });
+    if(error){ showToast('Incorrect email or password'); return false; }
+    enterPanel();
+    return false;
+  }
+  async function doLogout(){
+    await _sb.auth.signOut();
+    location.reload();
+  }
+  function enterPanel(){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('panel').style.display='block';
+    loadSubs();
+  }
+
+  /* ---------- TABS / FILTERS ---------- */
+  function showTab(t){
+    document.getElementById('tabSubs').classList.toggle('active', t==='subs');
+    document.getElementById('tabAdd').classList.toggle('active', t==='add');
+    document.getElementById('subsPanel').style.display = t==='subs' ? 'block' : 'none';
+    document.getElementById('addPanel').style.display = t==='add' ? 'block' : 'none';
+    if(t==='subs') loadSubs();
+  }
+  function setFilter(f, btn){
+    filter = f;
+    document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSubs();
+  }
+
+  /* ---------- SUBMISSIONS ---------- */
+  async function loadSubs(){
+    const { data, error } = await _sb.from('submissions').select('*').order('created_at', { ascending: false });
+    if(error){ console.error(error); showToast('Could not load submissions — check your session'); return; }
+    subs = data || [];
+    renderSubs();
+  }
+
+  function fmtDate(d){ return d ? new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—'; }
+
+  function renderSubs(){
+    const list = document.getElementById('subsList');
+    const rows = filter==='all' ? subs : subs.filter(s=>s.status===filter);
+    if(rows.length===0){ list.innerHTML = '<div class="empty">No submissions here.</div>'; return; }
+    list.innerHTML = rows.map(s => `
+      <div class="sub-card">
+        <div class="sub-head">
+          <span class="sub-name">
+            ${s.photo_url ? `<img src="${s.photo_url}">` : ''}
+            <span>${esc(s.full_name)}</span>
+          </span>
+          <span class="badge ${s.status}">${s.status}</span>
+        </div>
+        <div class="sub-meta">
+          <b>Email:</b> ${esc(s.email||'—')} · <b>Category:</b> ${LABELS[s.category]||esc(s.category)} · <b>Received:</b> ${fmtDate(s.created_at)}<br>
+          ${s.social_handle ? `<b>Social:</b> ${esc(s.social_handle)} · ` : ''}${s.bio ? `<b>Bio:</b> ${esc(s.bio)}` : ''}
+        </div>
+        <div class="sub-body">
+          ${s.written_message ? `<div class="sub-msg">${esc(s.written_message)}</div>` : ''}
+          ${s.video_url ? `<video class="sub-video" src="${s.video_url}" controls preload="metadata"></video>` : ''}
+        </div>
+        ${s.admin_notes ? `<div class="sub-meta"><b>Note:</b> ${esc(s.admin_notes)}</div>` : ''}
+        <div class="consent-line">
+          Consent: <b>${s.consent_accepted ? 'accepted' : 'NOT accepted'}</b>
+          ${s.consent_accepted_at ? ' · ' + fmtDate(s.consent_accepted_at) : ''}
+          ${s.consent_terms_version ? ' · ' + s.consent_terms_version : ''}
+          · Newsletter: <b>${s.newsletter_opt_in ? 'YES' : 'NO'}</b>
+          ${s.published_at ? ' · Published: ' + fmtDate(s.published_at) : ''}
+        </div>
+        <div class="sub-actions">
+          ${s.status!=='published' ? `<button class="btn-gold btn-sm" onclick="setStatus('${s.id}','published')">Publish</button>` : `<button class="btn-outline btn-sm" onclick="setStatus('${s.id}','approved')">Unpublish</button>`}
+          ${s.status==='pending' ? `<button class="btn-outline btn-sm" onclick="setStatus('${s.id}','approved')">Approve</button>` : ''}
+          ${s.status!=='rejected' ? `<button class="btn-outline btn-sm" onclick="rejectSub('${s.id}')">Reject</button>` : ''}
+          <button class="btn-danger" onclick="deleteSub('${s.id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function esc(x){ const d=document.createElement('div'); d.textContent = x==null?'':String(x); return d.innerHTML; }
+
+  async function setStatus(id, status){
+    const patch = { status };
+    if(status==='published') patch.published_at = new Date().toISOString();
+    const { error } = await _sb.from('submissions').update(patch).eq('id', id);
+    if(error){ console.error(error); showToast('Update failed'); return; }
+    showToast(status==='published' ? 'Published to the directory' : `Status: ${status}`);
+    loadSubs();
+  }
+
+  async function rejectSub(id){
+    const note = prompt('Optional internal note for this rejection (leave empty for none):') || null;
+    const { error } = await _sb.from('submissions').update({ status:'rejected', admin_notes: note }).eq('id', id);
+    if(error){ showToast('Update failed'); return; }
+    showToast('Rejected');
+    loadSubs();
+  }
+
+  function storagePathFromUrl(url, bucket){
+    const marker = `/object/public/${bucket}/`;
+    const i = url ? url.indexOf(marker) : -1;
+    return i === -1 ? null : decodeURIComponent(url.slice(i + marker.length));
+  }
+
+  async function deleteSub(id){
+    const s = subs.find(x=>x.id===id);
+    if(!s) return;
+    if(!confirm(`Delete ${s.full_name}'s submission permanently?\nThis removes the database record AND the uploaded files (GDPR erasure). This cannot be undone.`)) return;
+    // remove storage files first
+    const pPath = storagePathFromUrl(s.photo_url, 'photos');
+    const vPath = storagePathFromUrl(s.video_url, 'videos');
+    if(pPath) await _sb.storage.from('photos').remove([pPath]);
+    if(vPath) await _sb.storage.from('videos').remove([vPath]);
+    // legacy bucket cleanup
+    const legacyP = storagePathFromUrl(s.photo_url, 'fov-media');
+    const legacyV = storagePathFromUrl(s.video_url, 'fov-media');
+    if(legacyP) await _sb.storage.from('fov-media').remove([legacyP]);
+    if(legacyV) await _sb.storage.from('fov-media').remove([legacyV]);
+    const { error } = await _sb.from('submissions').delete().eq('id', id);
+    if(error){ showToast('Delete failed'); return; }
+    showToast('Deleted — record and files removed');
+    loadSubs();
+  }
+
+  /* ---------- CSV EXPORT ---------- */
+  function exportCSV(){
+    if(subs.length===0){ showToast('Nothing to export'); return; }
+    const cols = ['id','created_at','full_name','email','category','social_handle','bio','photo_url','video_url','written_message','status','consent_accepted','consent_accepted_at','consent_terms_version','newsletter_opt_in','admin_notes','published_at'];
+    const escape = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+    const csv = [cols.join(',')].concat(subs.map(s => cols.map(c=>escape(s[c])).join(','))).join('\r\n');
+    const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `future-of-voices-submissions-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    showToast('CSV downloaded');
+  }
+
+  /* ---------- ADD VOICE MANUALLY ---------- */
+  function setAvType(t){
+    avType = t;
+    document.getElementById('avTypeVideo').classList.toggle('active', t==='video');
+    document.getElementById('avTypeWritten').classList.toggle('active', t==='written');
+    document.getElementById('avVideoRow').style.display = t==='video' ? 'flex' : 'none';
+    document.getElementById('avVideoRow').style.flexDirection='column';
+    document.getElementById('avWrittenRow').style.display = t==='written' ? 'flex' : 'none';
+    document.getElementById('avWrittenRow').style.flexDirection='column';
+  }
+  function previewAv(e, prevId, phId){
+    const file = e.target.files[0]; if(!file) return;
+    const el = document.getElementById(prevId);
+    el.src = URL.createObjectURL(file);
+    el.style.display='block';
+    document.getElementById(phId).style.display='none';
+  }
+
+  async function uploadTo(bucket, path, file){
+    const { error } = await _sb.storage.from(bucket).upload(path, file);
+    if(error) throw error;
+    return _sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  }
+
+  async function handleAddVoice(e){
+    e.preventDefault();
+    const btn = document.getElementById('avSubmit');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try{
+      const name = document.getElementById('avName').value.trim();
+      const cat = document.getElementById('avCat').value;
+      const status = document.getElementById('avStatus').value;
+      if(!name || !cat){ showToast('Name and category are required'); return false; }
+      const stamp = Date.now();
+      const slug = name.replace(/\s+/g,'-').toLowerCase().normalize('NFD').replace(/[^a-z0-9-]/g,'');
+      const rec = {
+        full_name: name,
+        email: document.getElementById('avEmail').value.trim() || 'curated@wonderworldgroup.internal',
+        category: cat,
+        social_handle: document.getElementById('avSocial').value.trim() || null,
+        status,
+        consent_accepted: true,
+        consent_accepted_at: new Date().toISOString(),
+        consent_terms_version: 'v1.0-2026-07 (admin-curated)',
+        published_at: status==='published' ? new Date().toISOString() : null
+      };
+      const photo = document.getElementById('avPhoto');
+      if(photo.files[0]){
+        rec.photo_url = await uploadTo('photos', `${stamp}-${slug}.${photo.files[0].name.split('.').pop()}`, photo.files[0]);
+      }
+      if(avType==='video'){
+        const vid = document.getElementById('avVideo');
+        if(vid.files[0]){
+          rec.video_url = await uploadTo('videos', `${stamp}-${slug}.${vid.files[0].name.split('.').pop()}`, vid.files[0]);
+        } else {
+          rec.video_url = document.getElementById('avVideoUrl').value.trim() || null;
+        }
+        if(!rec.video_url){ showToast('Upload a video file or paste a URL'); return false; }
+      } else {
+        rec.written_message = document.getElementById('avMessage').value.trim();
+        if(!rec.written_message){ showToast('Write the message'); return false; }
+      }
+      const { error } = await _sb.from('submissions').insert(rec);
+      if(error){ console.error(error); showToast('Save failed'); return false; }
+      showToast(status==='published' ? `${name} is live in the directory` : `${name} saved as approved`);
+      document.getElementById('addForm').reset();
+      document.getElementById('avPhotoPrev').style.display='none';
+      document.getElementById('avPhotoPh').style.display='block';
+      document.getElementById('avVideoPrev').style.display='none';
+      document.getElementById('avVideoPh').style.display='block';
+      setAvType('video');
+      return false;
+    } catch(err){
+      console.error(err); showToast('Something failed — try again');
+      return false;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Add Voice';
+    }
+  }
+
+  checkSession();
+</script>
+</body>
+</html>
