@@ -27,6 +27,11 @@ create table if not exists submissions (
 -- ============ T2: RLS ============
 alter table submissions enable row level security;
 
+-- Base privileges (RLS is separate from GRANTs — policies do nothing without these)
+grant usage on schema public to anon, authenticated;
+grant insert on submissions to anon;
+grant select, insert, update, delete on submissions to authenticated;
+
 drop policy if exists "public_can_insert" on submissions;
 create policy "public_can_insert"
   on submissions for insert to anon with check (true);

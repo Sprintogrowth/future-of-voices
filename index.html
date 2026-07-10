@@ -524,9 +524,13 @@
     <div class="modal-body" style="text-align:center;">
       <div class="modal-cat">Your Photo</div>
       <h2 style="font-size:1.2rem;margin:8px 0 6px;">Adjust Your Photo</h2>
-      <p style="color:var(--gray);font-size:0.8rem;margin-bottom:16px;">Adjust your photo within the vertical frame (4:5). This is how your voice will appear in the directory.</p>
-      <div id="cropStage" style="width:288px;height:360px;margin:0 auto 18px;border-radius:14px;overflow:hidden;border:1px solid var(--gold);cursor:grab;touch-action:none;background:var(--black2);">
+      <p style="color:var(--gray);font-size:0.8rem;margin-bottom:16px;">Drag to reposition and use the slider to zoom. Zoom out to fit your whole photo — the sides fill automatically. This is how your voice will appear in the directory (4:5).</p>
+      <div id="cropStage" style="width:288px;height:360px;margin:0 auto 14px;border-radius:14px;overflow:hidden;border:1px solid var(--gold);cursor:grab;touch-action:none;background:var(--black2);">
         <canvas id="cropCanvas" width="288" height="360"></canvas>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin:0 4px 18px;">
+        <span style="font-size:0.7rem;color:var(--gray);">Zoom</span>
+        <input type="range" id="cropZoom" min="0" max="100" value="100" style="flex:1;accent-color:var(--gold);" oninput="onZoom(this.value)">
       </div>
       <button class="btn-gold" style="width:100%;" onclick="confirmCrop()">Looks Good</button>
       <button class="btn-outline" style="width:100%;margin-top:10px;" onclick="cancelCrop()">Choose Another Photo</button>
@@ -715,12 +719,14 @@
     else { showToast(url); }
   }
 
-  /* ---------- T3: PHOTO 4:5 CROP (1080x1350) WITH REPOSITION ---------- */
+  /* ---------- T3: PHOTO 4:5 (1080x1350) — reposition + zoom + blur-fill ---------- */
   const CROP_W = 1080, CROP_H = 1350;
-  let cropImg = null;         // HTMLImageElement of the selected photo
-  let cropOffset = {x:0, y:0}; // pan offset in preview px
-  let cropScale = 1;           // image scale so it covers the frame
-  let croppedBlob = null;      // final 1080x1350 JPEG blob
+  const FW = 288, FH = 360;      // preview frame (4:5)
+  let cropImg = null;
+  let cropOffset = {x:0, y:0};   // top-left of image in preview px
+  let cropScale = 1;             // current scale in preview px
+  let coverScale = 1, containScale = 1, maxScale = 1;
+  let croppedBlob = null;
 
   function validatePhotoFile(file){
     const okTypes = ['image/jpeg','image/png','image/webp'];
@@ -753,59 +759,83 @@
     img.src = url;
   }
 
+  function clampOffset(){
+    const iw = cropImg.naturalWidth * cropScale, ih = cropImg.naturalHeight * cropScale;
+    if(iw >= FW) cropOffset.x = Math.min(0, Math.max(FW - iw, cropOffset.x));
+    else cropOffset.x = (FW - iw) / 2;   // narrower than frame -> center, blur fills sides
+    if(ih >= FH) cropOffset.y = Math.min(0, Math.max(FH - ih, cropOffset.y));
+    else cropOffset.y = (FH - ih) / 2;   // shorter than frame -> center, blur fills top/bottom
+  }
+
   function openCropper(){
-    const bg = document.getElementById('cropBg');
-    const stage = document.getElementById('cropStage');
     const canvas = document.getElementById('cropCanvas');
-    // preview frame: 288x360 (4:5)
-    const fw = 288, fh = 360;
-    canvas.width = fw; canvas.height = fh;
-    // cover-fit scale
-    cropScale = Math.max(fw / cropImg.naturalWidth, fh / cropImg.naturalHeight);
-    cropOffset = {
-      x: (fw - cropImg.naturalWidth * cropScale) / 2,
-      y: (fh - cropImg.naturalHeight * cropScale) / 2
-    };
+    canvas.width = FW; canvas.height = FH;
+    coverScale = Math.max(FW / cropImg.naturalWidth, FH / cropImg.naturalHeight);
+    containScale = Math.min(FW / cropImg.naturalWidth, FH / cropImg.naturalHeight);
+    maxScale = coverScale * 2.5;
+    cropScale = coverScale;       // default: fills the frame
+    cropOffset = { x:(FW - cropImg.naturalWidth*cropScale)/2, y:(FH - cropImg.naturalHeight*cropScale)/2 };
+    // slider position for the default cover scale
+    const frac = (coverScale - containScale) / (maxScale - containScale);
+    document.getElementById('cropZoom').value = Math.round(frac * 100);
     drawCrop();
-    bg.classList.add('open');
+    document.getElementById('cropBg').classList.add('open');
     document.body.style.overflow='hidden';
 
-    // drag to reposition
+    const stage = document.getElementById('cropStage');
     let dragging = false, last = null;
     stage.onpointerdown = ev => { dragging = true; last = {x:ev.clientX, y:ev.clientY}; stage.setPointerCapture(ev.pointerId); };
     stage.onpointermove = ev => {
       if(!dragging) return;
-      const fw2 = canvas.width, fh2 = canvas.height;
       cropOffset.x += ev.clientX - last.x;
       cropOffset.y += ev.clientY - last.y;
       last = {x:ev.clientX, y:ev.clientY};
-      // clamp so the image always covers the frame
-      cropOffset.x = Math.min(0, Math.max(fw2 - cropImg.naturalWidth * cropScale, cropOffset.x));
-      cropOffset.y = Math.min(0, Math.max(fh2 - cropImg.naturalHeight * cropScale, cropOffset.y));
-      drawCrop();
+      clampOffset(); drawCrop();
     };
     stage.onpointerup = ()=> dragging = false;
   }
 
+  function onZoom(v){
+    const frac = v / 100;
+    const newScale = containScale + frac * (maxScale - containScale);
+    // keep the frame center anchored while zooming
+    const cx = (FW/2 - cropOffset.x) / cropScale;
+    const cy = (FH/2 - cropOffset.y) / cropScale;
+    cropScale = newScale;
+    cropOffset.x = FW/2 - cx * cropScale;
+    cropOffset.y = FH/2 - cy * cropScale;
+    clampOffset(); drawCrop();
+  }
+
+  // Renders blur-fill background + sharp image. Works for preview and final export.
+  function renderFrame(ctx, W, H, scale, offX, offY){
+    const iw = cropImg.naturalWidth, ih = cropImg.naturalHeight;
+    ctx.clearRect(0,0,W,H);
+    // 1) blurred cover background so there is never empty space
+    const bgScale = Math.max(W/iw, H/ih);
+    const bw = iw*bgScale, bh = ih*bgScale;
+    ctx.save();
+    ctx.filter = `blur(${Math.round(W*0.03)}px)`;
+    ctx.drawImage(cropImg, (W-bw)/2, (H-bh)/2, bw, bh);
+    ctx.restore();
+    // subtle darken so the sharp photo stands out
+    ctx.save(); ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(0,0,W,H); ctx.restore();
+    // 2) sharp image at user position
+    ctx.drawImage(cropImg, offX, offY, iw*scale, ih*scale);
+  }
+
   function drawCrop(){
     const canvas = document.getElementById('cropCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(cropImg, cropOffset.x, cropOffset.y, cropImg.naturalWidth * cropScale, cropImg.naturalHeight * cropScale);
+    renderFrame(canvas.getContext('2d'), FW, FH, cropScale, cropOffset.x, cropOffset.y);
   }
 
   function confirmCrop(){
-    // Export at full 1080x1350 using the same offsets scaled up
-    const preview = document.getElementById('cropCanvas');
-    const ratio = CROP_W / preview.width;
+    const ratio = CROP_W / FW;
     const out = document.createElement('canvas');
     out.width = CROP_W; out.height = CROP_H;
     const ctx = out.getContext('2d');
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(cropImg,
-      cropOffset.x * ratio, cropOffset.y * ratio,
-      cropImg.naturalWidth * cropScale * ratio,
-      cropImg.naturalHeight * cropScale * ratio);
+    renderFrame(ctx, CROP_W, CROP_H, cropScale*ratio, cropOffset.x*ratio, cropOffset.y*ratio);
     out.toBlob(blob=>{
       croppedBlob = blob;
       const img = document.getElementById('photoPreview');
@@ -813,7 +843,7 @@
       img.style.display='block';
       document.getElementById('photoPlaceholder').style.display='none';
       closeCropper();
-    }, 'image/jpeg', 0.8);
+    }, 'image/jpeg', 0.82);
   }
 
   function closeCropper(){
@@ -871,8 +901,21 @@
     if(!validateVideoFile(file)){ e.target.value=''; return; }
     const url = URL.createObjectURL(file);
     const vid = document.getElementById('videoPreview');
-    vid.src = url; vid.style.display='block';
-    document.getElementById('videoPlaceholder').style.display='none';
+    // check duration (<= 30s, with a small grace)
+    const probe = document.createElement('video');
+    probe.preload = 'metadata';
+    probe.onloadedmetadata = ()=>{
+      if(probe.duration && probe.duration > 31){
+        showToast('Please upload a video up to 30 seconds and 100 MB (MP4, MOV or WebM).');
+        e.target.value='';
+        vid.style.display='none';
+        document.getElementById('videoPlaceholder').style.display='flex';
+        return;
+      }
+      vid.src = url; vid.style.display='block';
+      document.getElementById('videoPlaceholder').style.display='none';
+    };
+    probe.src = url;
   }
 
   let _submitting = false;
