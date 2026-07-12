@@ -271,7 +271,7 @@
         </div>
         <div class="sub-body">
           ${s.written_message ? `<div class="sub-msg">${esc(s.written_message)}</div>` : ''}
-          ${s.video_url ? `<video class="sub-video" src="${s.video_url}" controls preload="metadata"></video>` : ''}
+          ${s.video_url ? videoHtml(s.video_url) : ''}
         </div>
         ${s.admin_notes ? `<div class="sub-meta"><b>Note:</b> ${esc(s.admin_notes)}</div>` : ''}
         <div class="consent-line">
@@ -291,6 +291,12 @@
   }
 
   function esc(x){ const d=document.createElement('div'); d.textContent = x==null?'':String(x); return d.innerHTML; }
+
+  function videoHtml(url){
+    const m = url && url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    if(m) return `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${m[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:10px;margin-top:10px;background:var(--black3);"></iframe>`;
+    return `<video class="sub-video" src="${url}" controls preload="metadata"></video>`;
+  }
 
   async function setStatus(id, status){
     const patch = { status };

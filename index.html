@@ -451,6 +451,9 @@
             <video id="videoPreview" style="display:none;" muted controls></video>
           </div>
           <button type="button" id="videoChangeBtn" onclick="resetVideo()" style="display:none;margin-top:8px;background:none;border:none;color:var(--gold);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:underline;">✕ Remove / change video</button>
+          <div style="text-align:center;color:var(--gray);font-size:0.72rem;letter-spacing:2px;margin:14px 0 6px;">— OR —</div>
+          <label>Paste a YouTube link (recommended for longer / heavier videos)</label>
+          <input type="url" id="videoLinkInput" placeholder="https://youtu.be/... (unlisted is fine)">
         </div>
 
         <div class="form-row" id="writtenMessageRow" style="display:none;">
@@ -582,8 +585,24 @@
   }
 
   /* ---------- HELPERS ---------- */
-  function voiceType(v){ return v.video_url ? 'video' : 'written'; }
+  function voiceType(v){ return (v.video_url ? 'video' : 'written'); }
   function voiceInit(name){ return (name||'').split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?'; }
+
+  // Returns a YouTube embed URL if the link is YouTube, otherwise null
+  function youtubeEmbed(url){
+    if(!url) return null;
+    const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+  }
+  // Renders the right player (YouTube iframe or native video) into a container
+  function renderPlayer(container, url){
+    const yt = youtubeEmbed(url);
+    if(yt){
+      container.innerHTML = `<iframe width="100%" height="300" src="${yt}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:12px;background:var(--black2);"></iframe>`;
+    } else {
+      container.innerHTML = `<video src="${url||''}" controls preload="metadata" style="width:100%;max-height:300px;border-radius:12px;background:var(--black2);border:1px solid var(--line);"></video>`;
+    }
+  }
 
   /* ---------- STORAGE (Supabase) ---------- */
   async function loadVoices(){
@@ -666,7 +685,7 @@
     if(type==='video'){
       document.getElementById('modalBio').textContent = `A video message from ${v.full_name} to inspire the next generation to dream without limits.`;
       document.getElementById('videoBar').style.display='block';
-      document.getElementById('modalVideo').src = v.video_url || '';
+      renderPlayer(document.getElementById('videoBar'), v.video_url);
       document.getElementById('writtenBlock').style.display='none';
     } else {
       document.getElementById('modalBio').textContent = `A written message from ${v.full_name} to inspire the next generation to dream without limits.`;
@@ -685,8 +704,8 @@
   }
   function closeModal(){
     modalBg.classList.remove('open'); document.body.style.overflow='';
-    const mv = document.getElementById('modalVideo');
-    if(mv){ mv.pause(); mv.removeAttribute('src'); mv.load(); }
+    const bar = document.getElementById('videoBar');
+    if(bar) bar.innerHTML = '';  // stops native video AND youtube iframe
   }
   modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
 
@@ -882,6 +901,7 @@
     document.getElementById('videoPlaceholder').style.display='flex';
     document.getElementById('photoChangeBtn').style.display='none';
     document.getElementById('videoChangeBtn').style.display='none';
+    const vl = document.getElementById('videoLinkInput'); if(vl) vl.value='';
     croppedBlob = null; cropImg = null;
     setMessageType('video');
   }
@@ -985,12 +1005,18 @@
       }
 
       if(selectedType==='video'){
+        const link = document.getElementById('videoLinkInput').value.trim();
         const vid = document.getElementById('videoInput');
-        if(!vid.files || vid.files.length===0){ showToast('Please upload your 30-second video'); return false; }
-        if(!validateVideoFile(vid.files[0])) return false;
-        const ext = vid.files[0].name.split('.').pop().toLowerCase();
-        try{ reg.video_url = await uploadFile('videos', `${stamp}-${slugName}.${ext}`, vid.files[0]); }
-        catch(err){ console.error(err); showToast('Video upload failed — please try again'); return false; }
+        if(link){
+          reg.video_url = link;
+        } else if(vid.files && vid.files.length>0){
+          if(!validateVideoFile(vid.files[0])) return false;
+          const ext = vid.files[0].name.split('.').pop().toLowerCase();
+          try{ reg.video_url = await uploadFile('videos', `${stamp}-${slugName}.${ext}`, vid.files[0]); }
+          catch(err){ console.error(err); showToast('Video upload failed — please upload a smaller file or paste a YouTube link instead'); return false; }
+        } else {
+          showToast('Upload a video or paste a YouTube link'); return false;
+        }
       } else {
         const msg = document.getElementById('writtenMessageInput').value.trim();
         if(!msg){ showToast('Please write your message'); return false; }
