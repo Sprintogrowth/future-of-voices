@@ -444,15 +444,18 @@
         </div>
 
         <div class="form-row" id="videoUploadRow">
-          <label>Video (up to 1 minute)</label>
+          <label>Your Video (up to 1 minute)</label>
+          <p style="font-size:0.78rem;color:var(--gray);line-height:1.6;margin:2px 0 10px;">There are two ways to add your video. Use whichever works for you — if one doesn't work, the other will:</p>
+          <p style="font-size:0.76rem;color:var(--gold);margin:0 0 6px;"><strong>Option 1 — Upload a short file</strong> (best for small clips)</p>
           <div class="upload-box" id="videoBox">
             <input type="file" id="videoInput" accept="video/*" onchange="previewVideo(event)">
             <div class="upload-placeholder" id="videoPlaceholder">+ Upload Video</div>
             <video id="videoPreview" style="display:none;" muted controls></video>
           </div>
           <button type="button" id="videoChangeBtn" onclick="resetVideo()" style="display:none;margin-top:8px;background:none;border:none;color:var(--gold);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:underline;">✕ Remove / change video</button>
-          <div style="text-align:center;color:var(--gray);font-size:0.72rem;letter-spacing:2px;margin:14px 0 6px;">— OR —</div>
-          <label>Paste a YouTube link (recommended for longer / heavier videos)</label>
+          <div style="text-align:center;color:var(--gray);font-size:0.72rem;letter-spacing:2px;margin:16px 0 8px;">— OR —</div>
+          <p style="font-size:0.76rem;color:var(--gold);margin:0 0 6px;"><strong>Option 2 — Paste a YouTube link</strong> (recommended for longer or heavier videos)</p>
+          <p style="font-size:0.74rem;color:var(--gray);line-height:1.55;margin:0 0 8px;">Upload your video to YouTube as <em>Unlisted</em>, then paste the link here. Nothing is uploaded to our site, so it always works.</p>
           <input type="url" id="videoLinkInput" placeholder="https://youtu.be/... (unlisted is fine)">
         </div>
 
