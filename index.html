@@ -446,17 +446,18 @@
         <div class="form-row" id="videoUploadRow">
           <label>Your Video (up to 1 minute)</label>
           <p style="font-size:0.78rem;color:var(--gray);line-height:1.6;margin:2px 0 10px;">There are two ways to add your video. Use whichever works for you — if one doesn't work, the other will:</p>
-          <p style="font-size:0.76rem;color:var(--gold);margin:0 0 6px;"><strong>Option 1 — Upload a short file</strong> (best for small clips)</p>
+          <p style="font-size:0.76rem;color:var(--gold);margin:0 0 6px;"><strong>Option 1 — Upload a short file</strong> (best for small clips, maximum 45 MB)</p>
           <div class="upload-box" id="videoBox">
             <input type="file" id="videoInput" accept="video/*" onchange="previewVideo(event)">
-            <div class="upload-placeholder" id="videoPlaceholder">+ Upload Video</div>
+            <div class="upload-placeholder" id="videoPlaceholder">+ Upload Video (max 45 MB)</div>
             <video id="videoPreview" style="display:none;" muted controls></video>
           </div>
           <button type="button" id="videoChangeBtn" onclick="resetVideo()" style="display:none;margin-top:8px;background:none;border:none;color:var(--gold);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:underline;">✕ Remove / change video</button>
+          <div id="videoError" style="display:none;margin-top:10px;padding:12px 14px;border:1px solid rgba(224,128,128,0.6);background:rgba(224,128,128,0.1);border-radius:8px;color:#f0b6b6;font-size:0.8rem;line-height:1.55;"></div>
           <div style="text-align:center;color:var(--gray);font-size:0.72rem;letter-spacing:2px;margin:16px 0 8px;">— OR —</div>
           <p style="font-size:0.76rem;color:var(--gold);margin:0 0 6px;"><strong>Option 2 — Paste a YouTube link</strong> (recommended for longer or heavier videos)</p>
           <p style="font-size:0.74rem;color:var(--gray);line-height:1.55;margin:0 0 8px;">Upload your video to YouTube as <em>Unlisted</em>, then paste the link here. Nothing is uploaded to our site, so it always works.</p>
-          <input type="url" id="videoLinkInput" placeholder="https://youtu.be/... (unlisted is fine)">
+          <input type="url" id="videoLinkInput" placeholder="https://youtu.be/... (unlisted is fine)" oninput="if(this.value.trim()) hideVideoError();">
         </div>
 
         <div class="form-row" id="writtenMessageRow" style="display:none;">
@@ -905,23 +906,32 @@
     document.getElementById('photoChangeBtn').style.display='none';
     document.getElementById('videoChangeBtn').style.display='none';
     const vl = document.getElementById('videoLinkInput'); if(vl) vl.value='';
+    hideVideoError();
     croppedBlob = null; cropImg = null;
     setMessageType('video');
   }
   registerBg.addEventListener('click', e=>{ if(e.target===registerBg) closeRegister(); });
 
-  const MAX_VIDEO_BYTES = 48 * 1024 * 1024; // server upload ceiling is 50MB
+  const MAX_VIDEO_BYTES = 45 * 1024 * 1024; // server upload ceiling is 50MB, keep margin
+  function showVideoError(msg){
+    const el = document.getElementById('videoError');
+    el.innerHTML = msg; el.style.display = 'block';
+  }
+  function hideVideoError(){ document.getElementById('videoError').style.display = 'none'; }
+
   function validateVideoFile(file){
     const okTypes = ['video/mp4','video/quicktime','video/webm'];
     const okExt = /\.(mp4|mov|webm)$/i.test(file.name);
     if(!okTypes.includes(file.type) && !okExt){
-      showToast('Unsupported format. Please upload an MP4, MOV or WebM video.');
+      showVideoError('<strong>Format not supported.</strong> Please upload an MP4, MOV or WebM video — or use Option 2 and paste a YouTube link.');
       return false;
     }
     if(file.size > MAX_VIDEO_BYTES){
-      showToast('This video file is too large to upload here. Please paste a YouTube link below instead (recommended) — or upload a smaller file.');
+      const mb = Math.round(file.size / (1024*1024));
+      showVideoError(`<strong>This video is too large (${mb} MB).</strong> The maximum upload size is 45 MB. Please either compress your video to a smaller size, or use <strong>Option 2 below</strong> and paste a YouTube link (recommended). Your video will still show perfectly on the site.`);
       return false;
     }
+    hideVideoError();
     return true;
   }
 
@@ -963,6 +973,7 @@
     v.pause && v.pause(); v.removeAttribute('src'); v.style.display='none';
     document.getElementById('videoPlaceholder').style.display='flex';
     document.getElementById('videoChangeBtn').style.display='none';
+    hideVideoError();
   }
 
   let _submitting = false;
@@ -1017,7 +1028,7 @@
           if(!validateVideoFile(vid.files[0])) return false;
           const ext = vid.files[0].name.split('.').pop().toLowerCase();
           try{ reg.video_url = await uploadFile('videos', `${stamp}-${slugName}.${ext}`, vid.files[0]); }
-          catch(err){ console.error(err); showToast('Video upload failed — please upload a smaller file or paste a YouTube link instead'); return false; }
+          catch(err){ console.error(err); showVideoError('<strong>Your video could not be uploaded.</strong> It may be too large or the connection dropped. Please compress it to under 45 MB, or use <strong>Option 2 below</strong> and paste a YouTube link instead.'); showToast('Video could not be uploaded — see the message above'); return false; }
         } else {
           showToast('Upload a video or paste a YouTube link'); return false;
         }
