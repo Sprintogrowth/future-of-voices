@@ -138,6 +138,8 @@
           <option value="actresses">Actress</option>
           <option value="influencers">Influencer</option>
           <option value="visionaries">Visionary</option>
+          <option value="producers">Producer</option>
+          <option value="film_industry">Film Industry</option>
         </select>
       </div>
       <div class="form-row"><label>Email (internal record, never published)</label><input type="email" id="avEmail"></div>
@@ -190,7 +192,7 @@
   const SB_URL = 'https://etwlatwcvajlsppybryz.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xhdHdjdmFqbHNwcHlicnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzIxMDMsImV4cCI6MjA5ODAwODEwM30.vPgRuAMOTZRngLG1M2aHySD9EmQEnXIJa3Tn6gLwT1U';
   const _sb = supabase.createClient(SB_URL, SB_ANON);
-  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary'};
+  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary', producers:'Producer', film_industry:'Film Industry'};
 
   let subs = [];
   let filter = 'all';

@@ -314,6 +314,8 @@
     <button class="filter-btn" data-filter="actresses">Actresses</button>
     <button class="filter-btn" data-filter="influencers">Influencers</button>
     <button class="filter-btn" data-filter="visionaries">Visionaries</button>
+    <button class="filter-btn" data-filter="producers">Producers</button>
+    <button class="filter-btn" data-filter="film_industry">Film Industry</button>
   </div>
   <div class="grid reveal" id="grid"></div>
   <div class="empty-state" id="emptyState" style="display:none;">
@@ -419,6 +421,8 @@
             <option value="actresses">Actress</option>
             <option value="influencers">Influencer</option>
             <option value="visionaries">Visionary</option>
+            <option value="producers">Producer</option>
+            <option value="film_industry">Film Industry</option>
           </select>
         </div>
         <div class="form-row"><label>Email *</label><input id="regEmail" type="email" required></div>
@@ -564,7 +568,7 @@
     video: `<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>`,
     written: `<svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4V4z"/></svg>`
   };
-  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary'};
+  const LABELS = {actors:'Actor', actresses:'Actress', influencers:'Influencer', visionaries:'Visionary', producers:'Producer', film_industry:'Film Industry'};
 
   let voicesCache = [];
   let currentVoice = null;
