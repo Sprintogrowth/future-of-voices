@@ -143,7 +143,7 @@
       <div class="form-row"><label>Email (internal record, never published)</label><input type="email" id="avEmail"></div>
       <div class="form-row"><label>Social Handle</label><input type="text" id="avSocial" placeholder="@username"></div>
       <div class="form-row">
-        <label>Photo</label>
+        <label>Photo * (required — voices without a photo look incomplete)</label>
         <div class="upload-box">
           <input type="file" id="avPhoto" accept="image/*" onchange="previewAv(event,'avPhotoPrev','avPhotoPh')">
           <div class="upload-placeholder" id="avPhotoPh">+ Upload Photo</div>
@@ -402,9 +402,10 @@
         published_at: status==='published' ? new Date().toISOString() : null
       };
       const photo = document.getElementById('avPhoto');
-      if(photo.files[0]){
-        rec.photo_url = await uploadTo('photos', `${stamp}-${slug}.${photo.files[0].name.split('.').pop()}`, photo.files[0]);
+      if(!photo.files[0]){
+        showToast('A photo is required — please upload one'); return false;
       }
+      rec.photo_url = await uploadTo('photos', `${stamp}-${slug}.${photo.files[0].name.split('.').pop()}`, photo.files[0]);
       if(avType==='video'){
         const vid = document.getElementById('avVideo');
         if(vid.files[0]){
