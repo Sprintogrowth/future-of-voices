@@ -159,14 +159,8 @@
         </div>
       </div>
       <div class="form-row" id="avVideoRow">
-        <label>Video File</label>
-        <div class="upload-box">
-          <input type="file" id="avVideo" accept="video/*" onchange="previewAv(event,'avVideoPrev','avVideoPh')">
-          <div class="upload-placeholder" id="avVideoPh">+ Upload Video</div>
-          <video id="avVideoPrev" style="display:none;" muted controls></video>
-        </div>
-        <label style="margin-top:8px;">Or paste a Video URL</label>
-        <input type="url" id="avVideoUrl" placeholder="https://...">
+        <label>Video Link (YouTube — unlisted is fine)</label>
+        <input type="url" id="avVideoUrl" placeholder="https://youtu.be/...">
       </div>
       <div class="form-row" id="avWrittenRow" style="display:none;">
         <label>Written Message</label>
@@ -408,13 +402,8 @@
       }
       rec.photo_url = await uploadTo('photos', `${stamp}-${slug}.${photo.files[0].name.split('.').pop()}`, photo.files[0]);
       if(avType==='video'){
-        const vid = document.getElementById('avVideo');
-        if(vid.files[0]){
-          rec.video_url = await uploadTo('videos', `${stamp}-${slug}.${vid.files[0].name.split('.').pop()}`, vid.files[0]);
-        } else {
-          rec.video_url = document.getElementById('avVideoUrl').value.trim() || null;
-        }
-        if(!rec.video_url){ showToast('Upload a video file or paste a URL'); return false; }
+        rec.video_url = document.getElementById('avVideoUrl').value.trim() || null;
+        if(!rec.video_url){ showToast('Paste a YouTube video link'); return false; }
       } else {
         rec.written_message = document.getElementById('avMessage').value.trim();
         if(!rec.written_message){ showToast('Write the message'); return false; }
@@ -425,8 +414,6 @@
       document.getElementById('addForm').reset();
       document.getElementById('avPhotoPrev').style.display='none';
       document.getElementById('avPhotoPh').style.display='block';
-      document.getElementById('avVideoPrev').style.display='none';
-      document.getElementById('avVideoPh').style.display='block';
       setAvType('video');
       return false;
     } catch(err){
