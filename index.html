@@ -701,7 +701,7 @@
     }
 
     const slug = v.full_name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-');
-    document.getElementById('modalLink').textContent = `soniaboost.com/future-of-voices/voices/${slug}`;
+    document.getElementById('modalLink').textContent = `futureofvoices.org`;
     document.getElementById('modalDate').textContent = v.published_at ? new Date(v.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
     document.getElementById('modalExtra').classList.remove('open');
     document.getElementById('shareMenu').classList.remove('open');
@@ -718,7 +718,7 @@
   function toggleFullProfile(){ document.getElementById('modalExtra').classList.toggle('open'); }
   function getShareData(){
     const slug = currentVoice.full_name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-');
-    const url = `https://soniaboost.com/future-of-voices/voices/${slug}`;
+    const url = `https://futureofvoices.org`;
     const text = `${currentVoice.full_name}'s message to the next generation — Future of Voices`;
     return {url, text};
   }
