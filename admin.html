@@ -87,12 +87,38 @@
 <div id="loginScreen">
   <div class="login-card">
     <div class="cat">Future of Voices</div>
-    <h1>Admin Access</h1>
-    <form onsubmit="return doLogin(event)">
-      <div class="form-row"><label>Email</label><input type="email" id="loginEmail" required autocomplete="username"></div>
-      <div class="form-row"><label>Password</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
-      <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Log In</button>
-    </form>
+
+    <!-- Login view -->
+    <div id="loginView">
+      <h1>Admin Access</h1>
+      <form onsubmit="return doLogin(event)">
+        <div class="form-row"><label>Email</label><input type="email" id="loginEmail" required autocomplete="username"></div>
+        <div class="form-row"><label>Password</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
+        <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Log In</button>
+      </form>
+      <button onclick="showForgot()" style="background:none;border:none;color:var(--gray);font-size:0.75rem;text-decoration:underline;cursor:pointer;margin-top:16px;">Forgot your password?</button>
+    </div>
+
+    <!-- Forgot-password view -->
+    <div id="forgotView" style="display:none;">
+      <h1>Reset Password</h1>
+      <p style="color:var(--gray);font-size:0.82rem;margin-bottom:18px;">Enter the admin email and we will send you a link to set a new password.</p>
+      <form onsubmit="return doForgot(event)">
+        <div class="form-row"><label>Admin Email</label><input type="email" id="forgotEmail" required></div>
+        <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Send reset link</button>
+      </form>
+      <button onclick="showLogin()" style="background:none;border:none;color:var(--gray);font-size:0.75rem;text-decoration:underline;cursor:pointer;margin-top:16px;">Back to log in</button>
+    </div>
+
+    <!-- Set-new-password view (shown after clicking the email link) -->
+    <div id="resetView" style="display:none;">
+      <h1>Set a New Password</h1>
+      <p style="color:var(--gray);font-size:0.82rem;margin-bottom:18px;">Choose a new password for your admin account.</p>
+      <form onsubmit="return doReset(event)">
+        <div class="form-row"><label>New Password</label><input type="password" id="newPassword" required minlength="6" autocomplete="new-password"></div>
+        <button type="submit" class="btn-gold" style="width:100%;margin-top:6px;">Save new password</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -199,7 +225,11 @@
   }
 
   /* ---------- AUTH ---------- */
+  const ADMIN_EMAIL = 'soniaboost.ai@gmail.com';
+
   async function checkSession(){
+    // If arriving from a password-reset email link, show the "set new password" form
+    if(location.hash.includes('type=recovery')){ showReset(); return; }
     const { data: { session } } = await _sb.auth.getSession();
     if(session){ enterPanel(); }
   }
@@ -220,6 +250,47 @@
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('panel').style.display='block';
     loadSubs();
+  }
+
+  /* ---------- PASSWORD RECOVERY ---------- */
+  function showLogin(){
+    document.getElementById('loginView').style.display='block';
+    document.getElementById('forgotView').style.display='none';
+    document.getElementById('resetView').style.display='none';
+  }
+  function showForgot(){
+    document.getElementById('loginView').style.display='none';
+    document.getElementById('forgotView').style.display='block';
+    document.getElementById('resetView').style.display='none';
+  }
+  function showReset(){
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('panel').style.display='none';
+    document.getElementById('loginView').style.display='none';
+    document.getElementById('forgotView').style.display='none';
+    document.getElementById('resetView').style.display='block';
+  }
+  async function doForgot(e){
+    e.preventDefault();
+    const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+    if(email !== ADMIN_EMAIL){
+      showToast('Password reset is only available for the admin account.');
+      return false;
+    }
+    const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://futureofvoices.org/admin' });
+    if(error){ console.error(error); showToast('Could not send the reset email — please try again.'); return false; }
+    showToast('Reset link sent to ' + ADMIN_EMAIL + ' — check your inbox (and spam).');
+    return false;
+  }
+  async function doReset(e){
+    e.preventDefault();
+    const password = document.getElementById('newPassword').value;
+    const { error } = await _sb.auth.updateUser({ password });
+    if(error){ console.error(error); showToast('Could not update password — the link may have expired. Request a new one.'); return false; }
+    history.replaceState(null, '', location.pathname);
+    showToast('Password updated. Welcome back!');
+    enterPanel();
+    return false;
   }
 
   /* ---------- TABS / FILTERS ---------- */
